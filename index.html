@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría COBIT 2019 - Papeles de Trabajo Completos</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a5276; --primary-light: #2980b9; --secondary: #27ae60;
+            --accent: #e67e22; --danger: #c0392b; --warning: #f39c12;
+            --bg: #f4f6f9; --card-bg: #ffffff; --border: #dce1e8;
+            --text: #2c3e50; --text-light: #7f8c8d;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08); --radius: 10px; --transition: all 0.25s ease;
+            --edm: #6c3483; --apo: #1a5276; --bai: #0e6655; --dss: #784212; --mea: #1b4f72;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.5; padding: 16px; }
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white; padding: 24px 28px; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 12px;
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;
+        }
+        header h1 { font-size: 1.5rem; font-weight: 600; }
+        header p { font-size: 0.88rem; opacity: 0.85; margin-top: 4px; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { border: none; border-radius: 8px; padding: 9px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-primary:hover { background: #eaf2f8; }
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-success:hover { background: #219a52; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: #d35400; }
+        .btn-outline { background: transparent; border: 2px solid white; color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.15); }
+        .progress-container { background: var(--card-bg); padding: 12px 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--secondary); }
+        .progress-text { font-size: 0.85rem; font-weight: 600; color: var(--text-light); white-space: nowrap; }
+        .progress-track { flex-grow: 1; height: 10px; background: #eaecee; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--danger); width: 0%; transition: width 0.4s ease; border-radius: 5px; }
+        .progress-pct { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+        .tabs-nav { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; background: var(--card-bg); padding: 8px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .tab-btn { padding: 8px 13px; border: 1px solid transparent; background: transparent; border-radius: 7px; font-size: 0.8rem; font-weight: 500; color: var(--text-light); cursor: pointer; transition: var(--transition); white-space: nowrap; }
+        .tab-btn:hover { background: #eef2f7; color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; font-weight: 600; }
+        .tab-btn.dom-edm.active { background: var(--edm); }
+        .tab-btn.dom-apo.active { background: var(--apo); }
+        .tab-btn.dom-bai.active { background: var(--bai); }
+        .tab-btn.dom-dss.active { background: var(--dss); }
+        .tab-btn.dom-mea.active { background: var(--mea); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 16px; border: 1px solid var(--border); }
+        .card h2 { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .card h2 .step { background: var(--primary); color: white; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+        .card .subtitle { font-size: 0.83rem; color: var(--text-light); margin-bottom: 14px; }
+        .obj-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 22px; margin-bottom: 14px; border-left: 5px solid var(--primary); }
+        .obj-card.edm { border-left-color: var(--edm); }
+        .obj-card.apo { border-left-color: var(--apo); }
+        .obj-card.bai { border-left-color: var(--bai); }
+        .obj-card.dss { border-left-color: var(--dss); }
+        .obj-card.mea { border-left-color: var(--mea); }
+        .obj-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+        .obj-title { font-size: 1rem; font-weight: 700; color: var(--primary); }
+        .obj-title .cod { font-size: 0.85rem; background: var(--primary); color: white; padding: 2px 8px; border-radius: 5px; margin-right: 8px; }
+        .obj-title.edm .cod { background: var(--edm); }
+        .obj-title.apo .cod { background: var(--apo); }
+        .obj-title.bai .cod { background: var(--bai); }
+        .obj-title.dss .cod { background: var(--dss); }
+        .obj-title.mea .cod { background: var(--mea); }
+        .obj-desc { font-size: 0.82rem; color: var(--text-light); margin-bottom: 12px; font-style: italic; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 3px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.03em; }
+        .form-group input, .form-group select, .form-group textarea { padding: 7px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 0.85rem; transition: var(--transition); background: #fafbfc; color: var(--text); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(41,128,185,0.12); background: white; }
+        .invalid-input { border-color: var(--danger) !important; background: #fadbd8 !important; }
+        .valid-input { border-color: var(--secondary) !important; background: #eafaf1 !important; }
+        .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 600px; }
+        thead { background: #eef2f7; }
+        th { padding: 9px 10px; text-align: left; font-weight: 600; color: var(--primary); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid var(--border); white-space: nowrap; }
+        td { padding: 7px 10px; border-bottom: 1px solid #edf1f5; vertical-align: middle; }
+        tbody tr:hover { background: #f8fafc; }
+        td input, td select, td textarea { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8rem; background: #fafbfc; }
+        td input:focus, td select:focus, td textarea:focus { outline: none; border-color: var(--primary-light); background: white; }
+        .badge-status { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+        .badge-critico { background: #fadbd8; color: var(--danger); }
+        .badge-alto { background: #fdebd0; color: #b9770e; }
+        .badge-medio { background: #fef9e7; color: #9a7d0a; }
+        .badge-bajo { background: #eafaf1; color: var(--secondary); }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
+        .kpi { background: #f8fafc; border-radius: 8px; padding: 12px 16px; border-left: 4px solid var(--primary-light); }
+        .kpi .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-light); font-weight: 600; }
+        .kpi .value { font-size: 1.4rem; font-weight: 700; color: var(--primary); margin-top: 2px; }
+        .kpi .value.danger { color: var(--danger); }
+        .kpi .value.success { color: var(--secondary); }
+        .kpi .value.warning { color: var(--warning); }
+        .kpi .sub { font-size: 0.7rem; color: var(--text-light); }
+        .domain-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; padding: 16px 20px; border-radius: var(--radius); margin-bottom: 16px; }
+        .domain-header.edm { background: linear-gradient(135deg, #6c3483 0%, #9b59b6 100%); }
+        .domain-header.apo { background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%); }
+        .domain-header.bai { background: linear-gradient(135deg, #0e6655 0%, #1abc9c 100%); }
+        .domain-header.dss { background: linear-gradient(135deg, #784212 0%, #e67e22 100%); }
+        .domain-header.mea { background: linear-gradient(135deg, #1b4f72 0%, #5dade2 100%); }
+        .domain-header h2 { font-size: 1.2rem; font-weight: 700; }
+        .domain-header p { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+        .domain-kpis { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .dom-kpi { background: rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 14px; text-align: center; }
+        .dom-kpi .dk-val { font-size: 1.3rem; font-weight: 700; }
+        .dom-kpi .dk-lab { font-size: 0.7rem; opacity: 0.9; }
+        .collapse-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; color: var(--text-light); float: right; }
+        .collapse-btn:hover { background: #eef2f7; }
+        .obj-body { transition: var(--transition); }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.35s ease; z-index: 9999; max-width: 340px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--secondary); }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
+        .criteria-table th, .criteria-table td { font-size: 0.78rem; }
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            header { padding: 14px; flex-direction: column; }
+            .form-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>📋 Auditoría de Gobierno y Gestión de I&T — COBIT 2019</h1>
+        <p>Papeles de trabajo · 5 dominios · 40 objetivos · Formularios individuales por objetivo</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-outline" onclick="exportarExcelVacio()">📄 Plantilla Vacía</button>
+        <button class="btn btn-primary" onclick="validarPasoActual()">✔ Validar paso</button>
+        <button class="btn btn-success" onclick="exportarExcelLleno()">⬇ Exportar Excel</button>
+    </div>
+</header>
+
+<div class="progress-container">
+    <div class="progress-text">Progreso global:</div>
+    <div class="progress-track"><div class="progress-fill" id="globalProgressFill"></div></div>
+    <div class="progress-pct" id="globalProgressPct">0%</div>
+</div>
+
+<nav class="tabs-nav" id="tabsNav">
+    <button class="tab-btn active" data-tab="portada">📄 Portada</button>
+    <button class="tab-btn" data-tab="contexto">🏢 Contexto</button>
+    <button class="tab-btn" data-tab="escalas">📊 Escalas</button>
+    <button class="tab-btn" data-tab="factores">⚙️ Factores Diseño</button>
+    <button class="tab-btn" data-tab="alcance">🎯 Alcance</button>
+    <button class="tab-btn dom-edm" data-tab="edm">🏛 EDM</button>
+    <button class="tab-btn dom-apo" data-tab="apo">📐 APO</button>
+    <button class="tab-btn dom-bai" data-tab="bai">🔧 BAI</button>
+    <button class="tab-btn dom-dss" data-tab="dss">🖥 DSS</button>
+    <button class="tab-btn dom-mea" data-tab="mea">📏 MEA</button>
+    <button class="tab-btn" data-tab="riesgos">⚠️ Riesgos</button>
+    <button class="tab-btn" data-tab="evidencias">📥 Evidencias</button>
+    <button class="tab-btn" data-tab="programa">📋 Programa</button>
+    <button class="tab-btn" data-tab="muestreo">🔬 Muestreo</button>
+    <button class="tab-btn" data-tab="capacidad">📈 Capacidad</button>
+    <button class="tab-btn" data-tab="hallazgos">🔍 Hallazgos</button>
+    <button class="tab-btn" data-tab="plan">✅ Plan Acción</button>
+    <button class="tab-btn" data-tab="resumen">📊 Resumen</button>
+    <button class="tab-btn" data-tab="informe">📝 Informe</button>
+</nav>
+
+<!-- ===== PORTADA ===== -->
+<div class="tab-content active" id="tab-portada">
+    <div class="card">
+        <h2><span class="step">1</span> Datos de la Auditoría</h2>
+        <p class="subtitle">Complete la información general. Los campos con <b>*</b> son obligatorios.</p>
+        <div class="form-grid">
+            <div class="form-group"><label>Entidad auditada *</label><input type="text" id="p_entidad" placeholder="Empresa Ejemplo S.A." oninput="validateField(this)"></div>
+            <div class="form-group"><label>Unidad / área auditada *</label><input type="text" id="p_area" placeholder="Gerencia de Tecnología" oninput="validateField(this)"></div>
+            <div class="form-group"><label>Período evaluado *</label><input type="text" id="p_periodo" placeholder="01/01/2026 - 30/09/2026" oninput="validateField(this)"></div>
+            <div class="form-group"><label>Auditor líder *</label><input type="text" id="p_auditor" placeholder="Nombre Apellido" oninput="validateField(this)"></div>
+            <div class="form-group"><label>Equipo auditor</label><input type="text" id="p_equipo" placeholder="Auditor 1, Auditor 2" oninput="updateGlobalProgress()"></div>
+            <div class="form-group"><label>Fecha de inicio</label><input type="date" id="p_fecha_ini" onchange="updateGlobalProgress()"></div>
+            <div class="form-group"><label>Fecha de cierre</label><input type="date" id="p_fecha_fin" onchange="updateGlobalProgress()"></div>
+            <div class="form-group"><label>Versión</label><input type="text" id="p_version" value="3.0" readonly style="background:#eef2f7;"></div>
+            <div class="form-group"><label>Referencia normativa</label><input type="text" value="COBIT 2019 (ISACA)" readonly style="background:#eef2f7;"></div>
+            <div class="form-group full"><label>Objetivo de la auditoría</label><textarea id="p_objetivo" rows="2" oninput="updateGlobalProgress()">Evaluar el nivel de capacidad de los 40 objetivos de gobierno y gestión de I&T conforme a COBIT 2019.</textarea></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CONTEXTO ===== -->
+<div class="tab-content" id="tab-contexto">
+    <div class="card">
+        <h2><span class="step">2</span> Contexto de la Entidad</h2>
+        <p class="subtitle">Entendimiento del negocio antes de aplicar los factores de diseño.</p>
+        <div class="form-grid">
+            <div class="form-group"><label>Misión / visión</label><textarea id="c_mision" rows="2" placeholder="Misión y visión de la organización..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Estrategia del negocio</label><textarea id="c_estrategia" rows="2" placeholder="Crecimiento, innovación, eficiencia..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Estructura organizacional (TI)</label><textarea id="c_estructura" rows="2" placeholder="Organigrama, comités, dependencias..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Principales procesos de negocio</label><textarea id="c_procesos" rows="2" placeholder="Procesos core y sistemas de soporte..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Marco regulatorio aplicable</label><textarea id="c_regulatorio" rows="2" placeholder="Leyes, normas sectoriales, protección de datos..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Historial de auditorías previas</label><textarea id="c_historial" rows="2" placeholder="Hallazgos abiertos, auditorías anteriores..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Madurez percibida de I&T</label>
+                <select id="c_madurez" onchange="updateGlobalProgress()"><option value="">Seleccione...</option><option value="Baja">Baja</option><option value="Media">Media</option><option value="Alta">Alta</option></select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ESCALAS ===== -->
+<div class="tab-content" id="tab-escalas">
+    <div class="card">
+        <h2><span class="step">3</span> Escalas de Referencia</h2>
+        <p class="subtitle">Modelo de capacidad COBIT 2019 (niveles 0-5). Puede editar nombres y descripciones.</p>
+        <div class="table-wrapper"><table id="tablaEscalas"><thead><tr><th>Nivel</th><th>Nombre</th><th>Descripción</th></tr></thead><tbody id="escalasBody"></tbody></table></div>
+    </div>
+</div>
+
+<!-- ===== FACTORES ===== -->
+<div class="tab-content" id="tab-factores">
+    <div class="card">
+        <h2><span class="step">4</span> Factores de Diseño COBIT 2019</h2>
+        <p class="subtitle">Valore cada factor (Bajo/Medio/Alto). Determinan las prioridades del sistema de gobierno.</p>
+        <div class="table-wrapper"><table id="tablaFactores"><thead><tr><th>N°</th><th>Factor de diseño</th><th>Qué evaluar</th><th>Valoración *</th><th>Valor</th><th>Peso (1-5)</th><th>Puntaje</th><th>Observaciones</th></tr></thead><tbody id="factoresBody"></tbody></table></div>
+        <div class="kpi-grid" style="margin-top:16px;">
+            <div class="kpi"><div class="label">Índice de exigencia</div><div class="value" id="kpiExigencia">—</div><div class="sub" id="kpiExigenciaLectura">Valore los factores</div></div>
+            <div class="kpi"><div class="label">Factores valorados</div><div class="value" id="kpiFactoresVal">0 / 11</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ALCANCE ===== -->
+<div class="tab-content" id="tab-alcance">
+    <div class="card">
+        <h2><span class="step">5</span> Alcance: 40 Objetivos COBIT 2019</h2>
+        <p class="subtitle">Defina prioridad, inclusión y justificación para cada objetivo.</p>
+        <div class="table-wrapper"><table id="tablaAlcance"><thead><tr><th>Código</th><th>Dominio</th><th>Objetivo</th><th>Prioridad</th><th>En alcance</th><th>Nivel meta</th><th>Justificación *</th></tr></thead><tbody id="alcanceBody"></tbody></table></div>
+        <div class="kpi-grid" style="margin-top:14px;">
+            <div class="kpi"><div class="label">Objetivos en alcance</div><div class="value" id="kpiAlcanceCount">0</div><div class="sub">de 40</div></div>
+            <div class="kpi"><div class="label">Sin justificación</div><div class="value danger" id="kpiSinJust">0</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DOMINIO EDM: EVALUAR, DIRIGIR Y MONITOREAR (5 objetivos) ===== -->
+<div class="tab-content" id="tab-edm">
+    <div class="domain-header edm">
+        <h2>🏛 EDM — Evaluar, Dirigir y Monitorear</h2>
+        <p>El órgano de gobierno evalúa las opciones estratégicas, dirige a la dirección general y monitorea el logro de los objetivos.</p>
+        <div class="domain-kpis">
+            <div class="dom-kpi"><div class="dk-val" id="edm-completados">0/5</div><div class="dk-lab">Objetivos completados</div></div>
+            <div class="dom-kpi"><div class="dk-val" id="edm-nivel-prom">—</div><div class="dk-lab">Nivel promedio</div></div>
+        </div>
+    </div>
+
+    <!-- EDM01 -->
+    <div class="obj-card edm">
+        <div class="obj-header">
+            <div class="obj-title edm"><span class="cod">EDM01</span> Asegurar el establecimiento y mantenimiento del marco de gobierno</div>
+            <button class="collapse-btn" onclick="toggleObj('edm01')">▲ Colapsar</button>
+        </div>
+        <p class="obj-desc">Analizar y articular los requisitos de un sistema de gobierno de I&T y establecer y mantener estructuras, principios, procesos y prácticas eficaces.</p>
+        <div class="obj-body" id="edm01-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="edm01_auditor" placeholder="Nombre del auditor" oninput="updateObjStatus('edm01')"></div>
+                <div class="form-group"><label>Fecha de evaluación</label><input type="date" id="edm01_fecha" onchange="updateObjStatus('edm01')"></div>
+                <div class="form-group"><label>Nivel de capacidad actual *</label>
+                    <select id="edm01_nivel" onchange="updateObjStatus('edm01')"><option value="">—</option><option value="0">0 - Incompleto</option><option value="1">1 - Realizado</option><option value="2">2 - Gestionado</option><option value="3">3 - Definido</option><option value="4">4 - Medible</option><option value="5">5 - Optimizado</option></select>
+                </div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="edm01_meta" min="0" max="5" placeholder="0-5" oninput="updateObjStatus('edm01')"></div>
+                <div class="form-group"><label>Resultado general *</label>
+                    <select id="edm01_resultado" onchange="updateObjStatus('edm01')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select>
+                </div>
+                <div class="form-group"><label>Referencia de evidencia</label><input type="text" id="edm01_evidencia" placeholder="Ej.: EV-001" oninput="updateObjStatus('edm01')"></div>
+                <div class="form-group full"><label>Descripción del marco de gobierno existente</label><textarea id="edm01_marco" rows="2" placeholder="Describa el marco de gobierno de TI implementado..." oninput="updateObjStatus('edm01')"></textarea></div>
+                <div class="form-group full"><label>Hallazgos / condición observada</label><textarea id="edm01_hallazgo" rows="2" placeholder="Describa las brechas o deficiencias encontradas..." oninput="updateObjStatus('edm01')"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:12px;">
+                <table class="criteria-table">
+                    <thead><tr><th>Criterio de evaluación</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje (0/50/100)</th><th>Observación</th></tr></thead>
+                    <tbody>
+                        <tr><td>Política de gobierno de TI aprobada por la alta dirección</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text" placeholder="Doc. ref."></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text" placeholder="Obs."></td></tr>
+                        <tr><td>Comité de gobierno de TI formal y activo</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text" placeholder="Doc. ref."></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text" placeholder="Obs."></td></tr>
+                        <tr><td>Principios de gobierno documentados y comunicados</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text" placeholder="Doc. ref."></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text" placeholder="Obs."></td></tr>
+                        <tr><td>Revisión y actualización periódica del marco de gobierno</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text" placeholder="Doc. ref."></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text" placeholder="Obs."></td></tr>
+                        <tr><td>Responsabilidades de gobierno claramente asignadas</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text" placeholder="Doc. ref."></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text" placeholder="Obs."></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-grid" style="margin-top:10px;">
+                <div class="form-group full"><label>Recomendación</label><textarea id="edm01_recom" rows="2" placeholder="Acciones recomendadas para mejorar este proceso..."></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDM02 -->
+    <div class="obj-card edm">
+        <div class="obj-header">
+            <div class="obj-title edm"><span class="cod">EDM02</span> Asegurar la entrega de beneficios</div>
+            <button class="collapse-btn" onclick="toggleObj('edm02')">▲ Colapsar</button>
+        </div>
+        <p class="obj-desc">Asegurar que las inversiones y servicios de I&T generen el máximo valor para el negocio y se gestionen para lograr los beneficios esperados.</p>
+        <div class="obj-body" id="edm02-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="edm02_auditor" placeholder="Nombre del auditor" oninput="updateObjStatus('edm02')"></div>
+                <div class="form-group"><label>Fecha de evaluación</label><input type="date" id="edm02_fecha" onchange="updateObjStatus('edm02')"></div>
+                <div class="form-group"><label>Nivel de capacidad actual *</label>
+                    <select id="edm02_nivel" onchange="updateObjStatus('edm02')"><option value="">—</option><option value="0">0 - Incompleto</option><option value="1">1 - Realizado</option><option value="2">2 - Gestionado</option><option value="3">3 - Definido</option><option value="4">4 - Medible</option><option value="5">5 - Optimizado</option></select>
+                </div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="edm02_meta" min="0" max="5" placeholder="0-5" oninput="updateObjStatus('edm02')"></div>
+                <div class="form-group"><label>Resultado general *</label>
+                    <select id="edm02_resultado" onchange="updateObjStatus('edm02')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select>
+                </div>
+                <div class="form-group"><label>Referencia de evidencia</label><input type="text" id="edm02_evidencia" placeholder="Ej.: EV-002" oninput="updateObjStatus('edm02')"></div>
+                <div class="form-group full"><label>Descripción de la gestión de beneficios</label><textarea id="edm02_desc" rows="2" placeholder="Describa cómo se gestionan y miden los beneficios de TI..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos / condición observada</label><textarea id="edm02_hallazgo" rows="2" placeholder="Brechas identificadas en la entrega de beneficios..."></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:12px;">
+                <table class="criteria-table">
+                    <thead><tr><th>Criterio de evaluación</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Observación</th></tr></thead>
+                    <tbody>
+                        <tr><td>Portafolio de inversiones de TI con casos de negocio</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Medición y reporte de beneficios realizados</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Proceso formal de revisión de beneficios post-implementación</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Alineación de inversiones de TI con prioridades del negocio</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-grid" style="margin-top:10px;">
+                <div class="form-group full"><label>Recomendación</label><textarea id="edm02_recom" rows="2" placeholder="Acciones recomendadas..."></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDM03 -->
+    <div class="obj-card edm">
+        <div class="obj-header">
+            <div class="obj-title edm"><span class="cod">EDM03</span> Asegurar la optimización del riesgo</div>
+            <button class="collapse-btn" onclick="toggleObj('edm03')">▲ Colapsar</button>
+        </div>
+        <p class="obj-desc">Asegurar que el apetito y la tolerancia al riesgo de la empresa se entiendan, articulen y comuniquen, y que el riesgo de I&T se gestione apropiadamente.</p>
+        <div class="obj-body" id="edm03-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="edm03_auditor" placeholder="Nombre del auditor" oninput="updateObjStatus('edm03')"></div>
+                <div class="form-group"><label>Fecha de evaluación</label><input type="date" id="edm03_fecha" onchange="updateObjStatus('edm03')"></div>
+                <div class="form-group"><label>Nivel de capacidad actual *</label>
+                    <select id="edm03_nivel" onchange="updateObjStatus('edm03')"><option value="">—</option><option value="0">0 - Incompleto</option><option value="1">1 - Realizado</option><option value="2">2 - Gestionado</option><option value="3">3 - Definido</option><option value="4">4 - Medible</option><option value="5">5 - Optimizado</option></select>
+                </div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="edm03_meta" min="0" max="5" placeholder="0-5" oninput="updateObjStatus('edm03')"></div>
+                <div class="form-group"><label>Resultado general *</label>
+                    <select id="edm03_resultado" onchange="updateObjStatus('edm03')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select>
+                </div>
+                <div class="form-group"><label>Referencia de evidencia</label><input type="text" id="edm03_evidencia" placeholder="Ej.: EV-003" oninput="updateObjStatus('edm03')"></div>
+                <div class="form-group full"><label>Descripción de la gestión del riesgo de TI</label><textarea id="edm03_desc" rows="2" placeholder="Marco de riesgo existente, apetito de riesgo documentado..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="edm03_hallazgo" rows="2" placeholder="Brechas en la gestión del riesgo de TI..."></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:12px;">
+                <table class="criteria-table">
+                    <thead><tr><th>Criterio de evaluación</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Observación</th></tr></thead>
+                    <tbody>
+                        <tr><td>Declaración formal del apetito de riesgo de TI</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Marco de gestión de riesgos de TI documentado</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Reporte periódico del perfil de riesgo de TI al gobierno</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Integración del riesgo de TI con el riesgo empresarial</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-grid" style="margin-top:10px;">
+                <div class="form-group full"><label>Recomendación</label><textarea id="edm03_recom" rows="2" placeholder="Acciones recomendadas..."></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDM04 -->
+    <div class="obj-card edm">
+        <div class="obj-header">
+            <div class="obj-title edm"><span class="cod">EDM04</span> Asegurar la optimización de recursos</div>
+            <button class="collapse-btn" onclick="toggleObj('edm04')">▲ Colapsar</button>
+        </div>
+        <p class="obj-desc">Asegurar que las capacidades de I&T (personas, procesos y tecnología) sean adecuadas para satisfacer los objetivos empresariales de forma eficiente.</p>
+        <div class="obj-body" id="edm04-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="edm04_auditor" placeholder="Nombre del auditor" oninput="updateObjStatus('edm04')"></div>
+                <div class="form-group"><label>Fecha de evaluación</label><input type="date" id="edm04_fecha" onchange="updateObjStatus('edm04')"></div>
+                <div class="form-group"><label>Nivel de capacidad actual *</label>
+                    <select id="edm04_nivel" onchange="updateObjStatus('edm04')"><option value="">—</option><option value="0">0 - Incompleto</option><option value="1">1 - Realizado</option><option value="2">2 - Gestionado</option><option value="3">3 - Definido</option><option value="4">4 - Medible</option><option value="5">5 - Optimizado</option></select>
+                </div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="edm04_meta" min="0" max="5" placeholder="0-5" oninput="updateObjStatus('edm04')"></div>
+                <div class="form-group"><label>Resultado general *</label>
+                    <select id="edm04_resultado" onchange="updateObjStatus('edm04')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select>
+                </div>
+                <div class="form-group"><label>Referencia de evidencia</label><input type="text" id="edm04_evidencia" placeholder="Ej.: EV-004" oninput="updateObjStatus('edm04')"></div>
+                <div class="form-group full"><label>Descripción de la gestión de recursos de TI</label><textarea id="edm04_desc" rows="2" placeholder="Personas, tecnología, infraestructura..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="edm04_hallazgo" rows="2" placeholder="Brechas en la optimización de recursos..."></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:12px;">
+                <table class="criteria-table">
+                    <thead><tr><th>Criterio de evaluación</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Observación</th></tr></thead>
+                    <tbody>
+                        <tr><td>Plan de recursos de TI alineado con la estrategia</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Gestión de capacidades del personal de TI</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Optimización del uso de tecnología e infraestructura</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-grid" style="margin-top:10px;">
+                <div class="form-group full"><label>Recomendación</label><textarea id="edm04_recom" rows="2" placeholder="Acciones recomendadas..."></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDM05 -->
+    <div class="obj-card edm">
+        <div class="obj-header">
+            <div class="obj-title edm"><span class="cod">EDM05</span> Asegurar el involucramiento de las partes interesadas</div>
+            <button class="collapse-btn" onclick="toggleObj('edm05')">▲ Colapsar</button>
+        </div>
+        <p class="obj-desc">Asegurar que las partes interesadas sean identificadas, involucradas y que sus necesidades sean transparentes y gestionadas adecuadamente.</p>
+        <div class="obj-body" id="edm05-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="edm05_auditor" placeholder="Nombre del auditor" oninput="updateObjStatus('edm05')"></div>
+                <div class="form-group"><label>Fecha de evaluación</label><input type="date" id="edm05_fecha" onchange="updateObjStatus('edm05')"></div>
+                <div class="form-group"><label>Nivel de capacidad actual *</label>
+                    <select id="edm05_nivel" onchange="updateObjStatus('edm05')"><option value="">—</option><option value="0">0 - Incompleto</option><option value="1">1 - Realizado</option><option value="2">2 - Gestionado</option><option value="3">3 - Definido</option><option value="4">4 - Medible</option><option value="5">5 - Optimizado</option></select>
+                </div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="edm05_meta" min="0" max="5" placeholder="0-5" oninput="updateObjStatus('edm05')"></div>
+                <div class="form-group"><label>Resultado general *</label>
+                    <select id="edm05_resultado" onchange="updateObjStatus('edm05')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select>
+                </div>
+                <div class="form-group"><label>Referencia de evidencia</label><input type="text" id="edm05_evidencia" placeholder="Ej.: EV-005" oninput="updateObjStatus('edm05')"></div>
+                <div class="form-group full"><label>Descripción del involucramiento de partes interesadas</label><textarea id="edm05_desc" rows="2" placeholder="Mecanismos de comunicación y participación..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="edm05_hallazgo" rows="2" placeholder="Brechas identificadas..."></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:12px;">
+                <table class="criteria-table">
+                    <thead><tr><th>Criterio de evaluación</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Observación</th></tr></thead>
+                    <tbody>
+                        <tr><td>Registro de partes interesadas de TI identificadas</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Mecanismos de comunicación y reporte a partes interesadas</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                        <tr><td>Gestión de expectativas y satisfacción de partes interesadas</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-grid" style="margin-top:10px;">
+                <div class="form-group full"><label>Recomendación</label><textarea id="edm05_recom" rows="2" placeholder="Acciones recomendadas..."></textarea></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DOMINIO APO: ALINEAR, PLANIFICAR Y ORGANIZAR (14 objetivos) ===== -->
+<div class="tab-content" id="tab-apo">
+    <div class="domain-header apo">
+        <h2>📐 APO — Alinear, Planificar y Organizar</h2>
+        <p>Proporciona dirección para la entrega de soluciones y prestación de servicios de TI. Cubre la estrategia, la arquitectura, la innovación, el portafolio, el presupuesto, los RRHH, las relaciones, los SLAs, proveedores, calidad, riesgo, seguridad y datos.</p>
+        <div class="domain-kpis">
+            <div class="dom-kpi"><div class="dk-val" id="apo-completados">0/14</div><div class="dk-lab">Objetivos completados</div></div>
+            <div class="dom-kpi"><div class="dk-val" id="apo-nivel-prom">—</div><div class="dk-lab">Nivel promedio</div></div>
+        </div>
+    </div>
+
+    <!-- Genera tarjetas para los 14 objetivos APO usando la misma estructura -->
+    <!-- APO01 -->
+    <div class="obj-card apo">
+        <div class="obj-header">
+            <div class="obj-title apo"><span class="cod">APO01</span> Gestionar el marco de gestión de I&T</div>
+            <button class="collapse-btn" onclick="toggleObj('apo01')">▲ Colapsar</button>
+        </div>
+        <p class="obj-desc">Clarificar y mantener la misión y la visión de gobierno y gestión de TI; implementar y mantener mecanismos y autoridades para la gestión de información y tecnología.</p>
+        <div class="obj-body" id="apo01-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo01_auditor" oninput="updateObjStatus('apo01')"></div>
+                <div class="form-group"><label>Fecha de evaluación</label><input type="date" id="apo01_fecha" onchange="updateObjStatus('apo01')"></div>
+                <div class="form-group"><label>Nivel de capacidad actual *</label><select id="apo01_nivel" onchange="updateObjStatus('apo01')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo01_meta" min="0" max="5" oninput="updateObjStatus('apo01')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo01_resultado" onchange="updateObjStatus('apo01')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo01_evidencia" oninput="updateObjStatus('apo01')"></div>
+                <div class="form-group full"><label>Descripción del marco de gestión de I&T</label><textarea id="apo01_desc" rows="2" placeholder="Políticas, procesos y estructura organizativa de TI..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo01_hallazgo" rows="2" placeholder="Brechas identificadas..."></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo01_recom" rows="2" placeholder="Acciones recomendadas..."></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>Políticas y procedimientos de TI documentados y vigentes</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Roles y responsabilidades de TI definidos</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Proceso de mejora continua del marco de gestión</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- APO02 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO02</span> Gestionar la estrategia</div><button class="collapse-btn" onclick="toggleObj('apo02')">▲ Colapsar</button></div>
+        <p class="obj-desc">Proporcionar una visión holística del negocio y el entorno actual de TI, dirección futura y las iniciativas necesarias para migrar al entorno deseado.</p>
+        <div class="obj-body" id="apo02-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo02_auditor" oninput="updateObjStatus('apo02')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo02_fecha" onchange="updateObjStatus('apo02')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo02_nivel" onchange="updateObjStatus('apo02')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo02_meta" min="0" max="5" oninput="updateObjStatus('apo02')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo02_resultado" onchange="updateObjStatus('apo02')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo02_evidencia" oninput="updateObjStatus('apo02')"></div>
+                <div class="form-group full"><label>Plan estratégico de TI</label><textarea id="apo02_desc" rows="2" placeholder="Existencia, vigencia y alineación del PETI..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo02_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo02_recom" rows="2"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>Plan estratégico de TI alineado con el plan de negocio</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Análisis de brechas (AS-IS vs TO-BE) documentado</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Revisión y actualización anual del PETI</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- APO03 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO03</span> Gestionar la arquitectura empresarial</div><button class="collapse-btn" onclick="toggleObj('apo03')">▲ Colapsar</button></div>
+        <p class="obj-desc">Establecer una arquitectura común compuesta por los procesos de negocio, la información, los datos, la aplicación y las capas tecnológicas de arquitectura.</p>
+        <div class="obj-body" id="apo03-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo03_auditor" oninput="updateObjStatus('apo03')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo03_fecha" onchange="updateObjStatus('apo03')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo03_nivel" onchange="updateObjStatus('apo03')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo03_meta" min="0" max="5" oninput="updateObjStatus('apo03')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo03_resultado" onchange="updateObjStatus('apo03')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo03_evidencia" oninput="updateObjStatus('apo03')"></div>
+                <div class="form-group full"><label>Descripción de la arquitectura empresarial</label><textarea id="apo03_desc" rows="2" placeholder="Estado actual de arquitectura (negocio, datos, aplicaciones, tecnología)..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo03_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo03_recom" rows="2"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>Arquitectura empresarial documentada y actualizada</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Comité o función de arquitectura establecida</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Estándares de arquitectura definidos y aplicados</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- APO04 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO04</span> Gestionar la innovación</div><button class="collapse-btn" onclick="toggleObj('apo04')">▲ Colapsar</button></div>
+        <p class="obj-desc">Mantener un conocimiento de las tendencias tecnológicas emergentes y de los modelos de servicio; identificar oportunidades de innovación para crear valor de negocio.</p>
+        <div class="obj-body" id="apo04-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo04_auditor" oninput="updateObjStatus('apo04')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo04_fecha" onchange="updateObjStatus('apo04')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo04_nivel" onchange="updateObjStatus('apo04')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo04_meta" min="0" max="5" oninput="updateObjStatus('apo04')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo04_resultado" onchange="updateObjStatus('apo04')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo04_evidencia" oninput="updateObjStatus('apo04')"></div>
+                <div class="form-group full"><label>Descripción del proceso de innovación</label><textarea id="apo04_desc" rows="2" placeholder="Mecanismos de vigilancia tecnológica e innovación..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo04_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo04_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO05 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO05</span> Gestionar el portafolio</div><button class="collapse-btn" onclick="toggleObj('apo05')">▲ Colapsar</button></div>
+        <p class="obj-desc">Ejecutar las orientaciones estratégicas para las inversiones alineadas con la visión de arquitectura empresarial. Considerar las opciones y los riesgos financieros.</p>
+        <div class="obj-body" id="apo05-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo05_auditor" oninput="updateObjStatus('apo05')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo05_fecha" onchange="updateObjStatus('apo05')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo05_nivel" onchange="updateObjStatus('apo05')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo05_meta" min="0" max="5" oninput="updateObjStatus('apo05')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo05_resultado" onchange="updateObjStatus('apo05')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo05_evidencia" oninput="updateObjStatus('apo05')"></div>
+                <div class="form-group full"><label>Estado del portafolio de inversiones de TI</label><textarea id="apo05_desc" rows="2" placeholder="Inventario de proyectos, programas y servicios..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo05_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo05_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO06 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO06</span> Gestionar el presupuesto y los costos</div><button class="collapse-btn" onclick="toggleObj('apo06')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar las actividades financieras relacionadas con TI en el negocio y en las funciones de TI, abarcando presupuesto, costos, beneficios y priorización del gasto.</p>
+        <div class="obj-body" id="apo06-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo06_auditor" oninput="updateObjStatus('apo06')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo06_fecha" onchange="updateObjStatus('apo06')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo06_nivel" onchange="updateObjStatus('apo06')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo06_meta" min="0" max="5" oninput="updateObjStatus('apo06')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo06_resultado" onchange="updateObjStatus('apo06')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo06_evidencia" oninput="updateObjStatus('apo06')"></div>
+                <div class="form-group full"><label>Proceso de presupuestación de TI</label><textarea id="apo06_desc" rows="2" placeholder="Presupuesto aprobado, ejecución, variaciones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo06_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo06_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO07 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO07</span> Gestionar los recursos humanos</div><button class="collapse-btn" onclick="toggleObj('apo07')">▲ Colapsar</button></div>
+        <p class="obj-desc">Proporcionar un enfoque estructurado para asegurar la estructura óptima, la ubicación, las capacidades de toma de decisiones y las habilidades del personal de TI.</p>
+        <div class="obj-body" id="apo07-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo07_auditor" oninput="updateObjStatus('apo07')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo07_fecha" onchange="updateObjStatus('apo07')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo07_nivel" onchange="updateObjStatus('apo07')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo07_meta" min="0" max="5" oninput="updateObjStatus('apo07')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo07_resultado" onchange="updateObjStatus('apo07')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo07_evidencia" oninput="updateObjStatus('apo07')"></div>
+                <div class="form-group full"><label>Gestión de recursos humanos de TI</label><textarea id="apo07_desc" rows="2" placeholder="Plan de capacitación, perfiles de cargo, evaluaciones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo07_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo07_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO08 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO08</span> Gestionar las relaciones</div><button class="collapse-btn" onclick="toggleObj('apo08')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar la relación entre el negocio y TI de manera formal y transparente, con un enfoque en lograr una meta común de resultados empresariales satisfactorios.</p>
+        <div class="obj-body" id="apo08-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo08_auditor" oninput="updateObjStatus('apo08')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo08_fecha" onchange="updateObjStatus('apo08')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo08_nivel" onchange="updateObjStatus('apo08')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo08_meta" min="0" max="5" oninput="updateObjStatus('apo08')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo08_resultado" onchange="updateObjStatus('apo08')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo08_evidencia" oninput="updateObjStatus('apo08')"></div>
+                <div class="form-group full"><label>Mecanismos de relación negocio-TI</label><textarea id="apo08_desc" rows="2" placeholder="Comités, enlace de negocio, satisfacción del cliente de TI..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo08_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo08_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO09 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO09</span> Gestionar los acuerdos de servicio</div><button class="collapse-btn" onclick="toggleObj('apo09')">▲ Colapsar</button></div>
+        <p class="obj-desc">Alinear los servicios de TI y los niveles de servicio con las necesidades y expectativas de la empresa, incluyendo identificación, especificación, diseño, publicación y control de los servicios.</p>
+        <div class="obj-body" id="apo09-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo09_auditor" oninput="updateObjStatus('apo09')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo09_fecha" onchange="updateObjStatus('apo09')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo09_nivel" onchange="updateObjStatus('apo09')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo09_meta" min="0" max="5" oninput="updateObjStatus('apo09')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo09_resultado" onchange="updateObjStatus('apo09')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo09_evidencia" oninput="updateObjStatus('apo09')"></div>
+                <div class="form-group full"><label>Estado de los SLAs / catálogo de servicios</label><textarea id="apo09_desc" rows="2" placeholder="Catálogo de servicios, SLAs firmados, revisiones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo09_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo09_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO10 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO10</span> Gestionar los proveedores</div><button class="collapse-btn" onclick="toggleObj('apo10')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar todos los servicios de TI prestados por proveedores externos para satisfacer los requisitos del negocio, minimizando el riesgo asociado a terceros.</p>
+        <div class="obj-body" id="apo10-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo10_auditor" oninput="updateObjStatus('apo10')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo10_fecha" onchange="updateObjStatus('apo10')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo10_nivel" onchange="updateObjStatus('apo10')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo10_meta" min="0" max="5" oninput="updateObjStatus('apo10')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo10_resultado" onchange="updateObjStatus('apo10')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo10_evidencia" oninput="updateObjStatus('apo10')"></div>
+                <div class="form-group full"><label>Gestión de proveedores de TI</label><textarea id="apo10_desc" rows="2" placeholder="Registro de proveedores, contratos, evaluaciones de desempeño..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo10_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo10_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO11 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO11</span> Gestionar la calidad</div><button class="collapse-btn" onclick="toggleObj('apo11')">▲ Colapsar</button></div>
+        <p class="obj-desc">Definir y comunicar los requisitos de calidad en todos los procesos, procedimientos y resultados relacionados con TI; facilitar el control de calidad usando métricas.</p>
+        <div class="obj-body" id="apo11-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo11_auditor" oninput="updateObjStatus('apo11')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo11_fecha" onchange="updateObjStatus('apo11')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo11_nivel" onchange="updateObjStatus('apo11')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo11_meta" min="0" max="5" oninput="updateObjStatus('apo11')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo11_resultado" onchange="updateObjStatus('apo11')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo11_evidencia" oninput="updateObjStatus('apo11')"></div>
+                <div class="form-group full"><label>Sistema de gestión de calidad de TI</label><textarea id="apo11_desc" rows="2" placeholder="SGC, estándares de calidad, métricas, revisiones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo11_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo11_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO12 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO12</span> Gestionar el riesgo</div><button class="collapse-btn" onclick="toggleObj('apo12')">▲ Colapsar</button></div>
+        <p class="obj-desc">Identificar, evaluar y reducir los riesgos relacionados con TI de manera continua dentro de los niveles de tolerancia establecidos.</p>
+        <div class="obj-body" id="apo12-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo12_auditor" oninput="updateObjStatus('apo12')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo12_fecha" onchange="updateObjStatus('apo12')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo12_nivel" onchange="updateObjStatus('apo12')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo12_meta" min="0" max="5" oninput="updateObjStatus('apo12')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo12_resultado" onchange="updateObjStatus('apo12')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo12_evidencia" oninput="updateObjStatus('apo12')"></div>
+                <div class="form-group full"><label>Proceso de gestión de riesgos de TI</label><textarea id="apo12_desc" rows="2" placeholder="Matriz de riesgos, proceso de identificación y tratamiento..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo12_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo12_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO13 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO13</span> Gestionar la seguridad</div><button class="collapse-btn" onclick="toggleObj('apo13')">▲ Colapsar</button></div>
+        <p class="obj-desc">Definir, operar y monitorear un sistema para la gestión de la seguridad de la información; proteger la confidencialidad, integridad y disponibilidad de la información.</p>
+        <div class="obj-body" id="apo13-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo13_auditor" oninput="updateObjStatus('apo13')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo13_fecha" onchange="updateObjStatus('apo13')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo13_nivel" onchange="updateObjStatus('apo13')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo13_meta" min="0" max="5" oninput="updateObjStatus('apo13')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo13_resultado" onchange="updateObjStatus('apo13')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo13_evidencia" oninput="updateObjStatus('apo13')"></div>
+                <div class="form-group full"><label>SGSI / Política de seguridad de la información</label><textarea id="apo13_desc" rows="2" placeholder="SGSI, ISO 27001, política de SI, controles implementados..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo13_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo13_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APO14 -->
+    <div class="obj-card apo">
+        <div class="obj-header"><div class="obj-title apo"><span class="cod">APO14</span> Gestionar los datos</div><button class="collapse-btn" onclick="toggleObj('apo14')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar los datos como un activo empresarial para satisfacer los requisitos de información de la empresa y proporcionar datos de calidad a las partes interesadas.</p>
+        <div class="obj-body" id="apo14-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="apo14_auditor" oninput="updateObjStatus('apo14')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="apo14_fecha" onchange="updateObjStatus('apo14')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="apo14_nivel" onchange="updateObjStatus('apo14')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="apo14_meta" min="0" max="5" oninput="updateObjStatus('apo14')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="apo14_resultado" onchange="updateObjStatus('apo14')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="apo14_evidencia" oninput="updateObjStatus('apo14')"></div>
+                <div class="form-group full"><label>Gestión y gobierno del dato</label><textarea id="apo14_desc" rows="2" placeholder="Política de datos, calidad, clasificación, gobierno del dato..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="apo14_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="apo14_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DOMINIO BAI: CONSTRUIR, ADQUIRIR E IMPLEMENTAR (11 objetivos) ===== -->
+<div class="tab-content" id="tab-bai">
+    <div class="domain-header bai">
+        <h2>🔧 BAI — Construir, Adquirir e Implementar</h2>
+        <p>Proporciona soluciones e implementa el plan estratégico de TI; gestiona los programas, proyectos, cambios, calidad, conocimiento, activos y configuración.</p>
+        <div class="domain-kpis">
+            <div class="dom-kpi"><div class="dk-val" id="bai-completados">0/11</div><div class="dk-lab">Objetivos completados</div></div>
+            <div class="dom-kpi"><div class="dk-val" id="bai-nivel-prom">—</div><div class="dk-lab">Nivel promedio</div></div>
+        </div>
+    </div>
+
+    <!-- BAI01 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI01</span> Gestionar programas</div><button class="collapse-btn" onclick="toggleObj('bai01')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar todos los programas del portafolio de inversiones de forma alineada con la estrategia empresarial, mediante prácticas efectivas de gestión de programas.</p>
+        <div class="obj-body" id="bai01-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai01_auditor" oninput="updateObjStatus('bai01')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai01_fecha" onchange="updateObjStatus('bai01')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai01_nivel" onchange="updateObjStatus('bai01')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai01_meta" min="0" max="5" oninput="updateObjStatus('bai01')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai01_resultado" onchange="updateObjStatus('bai01')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai01_evidencia" oninput="updateObjStatus('bai01')"></div>
+                <div class="form-group full"><label>Gestión de programas de TI</label><textarea id="bai01_desc" rows="2" placeholder="Inventario de programas, metodología, comité directivo..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai01_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai01_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI02 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI02</span> Gestionar la definición de requisitos</div><button class="collapse-btn" onclick="toggleObj('bai02')">▲ Colapsar</button></div>
+        <p class="obj-desc">Identificar soluciones y analizar requisitos antes de la adquisición o creación para garantizar que estén alineados con los requisitos estratégicos del negocio.</p>
+        <div class="obj-body" id="bai02-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai02_auditor" oninput="updateObjStatus('bai02')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai02_fecha" onchange="updateObjStatus('bai02')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai02_nivel" onchange="updateObjStatus('bai02')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai02_meta" min="0" max="5" oninput="updateObjStatus('bai02')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai02_resultado" onchange="updateObjStatus('bai02')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai02_evidencia" oninput="updateObjStatus('bai02')"></div>
+                <div class="form-group full"><label>Proceso de levantamiento de requisitos</label><textarea id="bai02_desc" rows="2" placeholder="Metodología, documentación de requisitos, aprobaciones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai02_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai02_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI03 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI03</span> Gestionar la identificación y construcción de soluciones</div><button class="collapse-btn" onclick="toggleObj('bai03')">▲ Colapsar</button></div>
+        <p class="obj-desc">Establecer y mantener soluciones identificadas alineadas con los requisitos de la empresa, abarcando diseño, desarrollo, adquisición/contratación y pruebas.</p>
+        <div class="obj-body" id="bai03-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai03_auditor" oninput="updateObjStatus('bai03')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai03_fecha" onchange="updateObjStatus('bai03')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai03_nivel" onchange="updateObjStatus('bai03')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai03_meta" min="0" max="5" oninput="updateObjStatus('bai03')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai03_resultado" onchange="updateObjStatus('bai03')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai03_evidencia" oninput="updateObjStatus('bai03')"></div>
+                <div class="form-group full"><label>Ciclo de vida de desarrollo / adquisición</label><textarea id="bai03_desc" rows="2" placeholder="Metodología de desarrollo, revisión de código, pruebas..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai03_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai03_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI04 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI04</span> Gestionar la disponibilidad y capacidad</div><button class="collapse-btn" onclick="toggleObj('bai04')">▲ Colapsar</button></div>
+        <p class="obj-desc">Mantener la disponibilidad, el rendimiento y la capacidad de los servicios e infraestructura de TI para equilibrar la demanda actual y futura del negocio.</p>
+        <div class="obj-body" id="bai04-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai04_auditor" oninput="updateObjStatus('bai04')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai04_fecha" onchange="updateObjStatus('bai04')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai04_nivel" onchange="updateObjStatus('bai04')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai04_meta" min="0" max="5" oninput="updateObjStatus('bai04')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai04_resultado" onchange="updateObjStatus('bai04')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai04_evidencia" oninput="updateObjStatus('bai04')"></div>
+                <div class="form-group full"><label>Gestión de disponibilidad y capacidad</label><textarea id="bai04_desc" rows="2" placeholder="SLAs de disponibilidad, monitoreo de capacidad, planes..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai04_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai04_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI05 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI05</span> Gestionar el cambio organizacional</div><button class="collapse-btn" onclick="toggleObj('bai05')">▲ Colapsar</button></div>
+        <p class="obj-desc">Maximizar la probabilidad de implementar exitosamente el cambio organizacional relacionado con TI de forma rápida y con riesgo reducido.</p>
+        <div class="obj-body" id="bai05-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai05_auditor" oninput="updateObjStatus('bai05')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai05_fecha" onchange="updateObjStatus('bai05')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai05_nivel" onchange="updateObjStatus('bai05')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai05_meta" min="0" max="5" oninput="updateObjStatus('bai05')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai05_resultado" onchange="updateObjStatus('bai05')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai05_evidencia" oninput="updateObjStatus('bai05')"></div>
+                <div class="form-group full"><label>Gestión del cambio organizacional</label><textarea id="bai05_desc" rows="2" placeholder="Planes de gestión del cambio, comunicación, capacitación..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai05_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai05_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI06 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI06</span> Gestionar los cambios de TI</div><button class="collapse-btn" onclick="toggleObj('bai06')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar todos los cambios de forma controlada, incluida la evaluación estándar y de emergencia, para minimizar el riesgo de impacto negativo en la infraestructura.</p>
+        <div class="obj-body" id="bai06-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai06_auditor" oninput="updateObjStatus('bai06')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai06_fecha" onchange="updateObjStatus('bai06')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai06_nivel" onchange="updateObjStatus('bai06')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai06_meta" min="0" max="5" oninput="updateObjStatus('bai06')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai06_resultado" onchange="updateObjStatus('bai06')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai06_evidencia" oninput="updateObjStatus('bai06')"></div>
+                <div class="form-group full"><label>Proceso de gestión de cambios de TI (ITIL/COBIT)</label><textarea id="bai06_desc" rows="2" placeholder="RFC, comité de cambios (CAB), flujo de aprobación..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai06_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai06_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI07 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI07</span> Gestionar la aceptación y transición de cambios de TI</div><button class="collapse-btn" onclick="toggleObj('bai07')">▲ Colapsar</button></div>
+        <p class="obj-desc">Aceptar formalmente y hacer operativas las nuevas soluciones, incluyendo la planificación de la implementación, la conversión de sistemas y datos y las pruebas de aceptación.</p>
+        <div class="obj-body" id="bai07-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai07_auditor" oninput="updateObjStatus('bai07')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai07_fecha" onchange="updateObjStatus('bai07')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai07_nivel" onchange="updateObjStatus('bai07')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai07_meta" min="0" max="5" oninput="updateObjStatus('bai07')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai07_resultado" onchange="updateObjStatus('bai07')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai07_evidencia" oninput="updateObjStatus('bai07')"></div>
+                <div class="form-group full"><label>Proceso de pase a producción y UAT</label><textarea id="bai07_desc" rows="2" placeholder="UAT, certificación de paso a producción, rollback..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai07_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai07_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI08 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI08</span> Gestionar el conocimiento</div><button class="collapse-btn" onclick="toggleObj('bai08')">▲ Colapsar</button></div>
+        <p class="obj-desc">Mantener la disponibilidad del conocimiento relevante para apoyar todas las actividades del proceso y facilitar la toma de decisiones correctas.</p>
+        <div class="obj-body" id="bai08-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai08_auditor" oninput="updateObjStatus('bai08')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai08_fecha" onchange="updateObjStatus('bai08')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai08_nivel" onchange="updateObjStatus('bai08')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai08_meta" min="0" max="5" oninput="updateObjStatus('bai08')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai08_resultado" onchange="updateObjStatus('bai08')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai08_evidencia" oninput="updateObjStatus('bai08')"></div>
+                <div class="form-group full"><label>Base de conocimiento y gestión documental</label><textarea id="bai08_desc" rows="2" placeholder="Wiki, repositorios de conocimiento, lecciones aprendidas..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai08_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai08_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI09 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI09</span> Gestionar los activos</div><button class="collapse-btn" onclick="toggleObj('bai09')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar los activos de TI a través de su ciclo de vida para garantizar que su uso aporte valor al costo óptimo, que estén contabilizados y protegidos.</p>
+        <div class="obj-body" id="bai09-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai09_auditor" oninput="updateObjStatus('bai09')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai09_fecha" onchange="updateObjStatus('bai09')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai09_nivel" onchange="updateObjStatus('bai09')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai09_meta" min="0" max="5" oninput="updateObjStatus('bai09')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai09_resultado" onchange="updateObjStatus('bai09')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai09_evidencia" oninput="updateObjStatus('bai09')"></div>
+                <div class="form-group full"><label>Inventario y gestión de activos de TI</label><textarea id="bai09_desc" rows="2" placeholder="Inventario de hardware/software, ciclo de vida, contratos..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai09_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai09_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI10 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI10</span> Gestionar la configuración</div><button class="collapse-btn" onclick="toggleObj('bai10')">▲ Colapsar</button></div>
+        <p class="obj-desc">Definir y mantener descripciones y relaciones entre recursos clave de TI para permitir una gestión efectiva de servicios, evaluar el impacto de los cambios.</p>
+        <div class="obj-body" id="bai10-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai10_auditor" oninput="updateObjStatus('bai10')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai10_fecha" onchange="updateObjStatus('bai10')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai10_nivel" onchange="updateObjStatus('bai10')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai10_meta" min="0" max="5" oninput="updateObjStatus('bai10')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai10_resultado" onchange="updateObjStatus('bai10')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai10_evidencia" oninput="updateObjStatus('bai10')"></div>
+                <div class="form-group full"><label>CMDB y gestión de configuración</label><textarea id="bai10_desc" rows="2" placeholder="CMDB, CIs, integridad de la base de configuración..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai10_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai10_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAI11 -->
+    <div class="obj-card bai">
+        <div class="obj-header"><div class="obj-title bai"><span class="cod">BAI11</span> Gestionar proyectos</div><button class="collapse-btn" onclick="toggleObj('bai11')">▲ Colapsar</button></div>
+        <p class="obj-desc">Gestionar todos los proyectos de TI dentro del portafolio de acuerdo a un programa de proyectos coordinado. Iniciar, planear, controlar y cerrar proyectos.</p>
+        <div class="obj-body" id="bai11-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="bai11_auditor" oninput="updateObjStatus('bai11')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="bai11_fecha" onchange="updateObjStatus('bai11')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="bai11_nivel" onchange="updateObjStatus('bai11')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="bai11_meta" min="0" max="5" oninput="updateObjStatus('bai11')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="bai11_resultado" onchange="updateObjStatus('bai11')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="bai11_evidencia" oninput="updateObjStatus('bai11')"></div>
+                <div class="form-group full"><label>Metodología y estado de proyectos de TI</label><textarea id="bai11_desc" rows="2" placeholder="PMO, metodología (PMI/PRINCE2/Ágil), seguimiento, KPIs..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="bai11_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="bai11_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DOMINIO DSS: ENTREGAR, DAR SERVICIO Y SOPORTE (6 objetivos) ===== -->
+<div class="tab-content" id="tab-dss">
+    <div class="domain-header dss">
+        <h2>🖥 DSS — Entregar, Dar Servicio y Soporte</h2>
+        <p>Incluye la ejecución y la gestión operativa de los servicios y el soporte de TI: operaciones, incidentes, problemas, continuidad, seguridad de servicios y controles de procesos de negocio.</p>
+        <div class="domain-kpis">
+            <div class="dom-kpi"><div class="dk-val" id="dss-completados">0/6</div><div class="dk-lab">Objetivos completados</div></div>
+            <div class="dom-kpi"><div class="dk-val" id="dss-nivel-prom">—</div><div class="dk-lab">Nivel promedio</div></div>
+        </div>
+    </div>
+
+    <!-- DSS01 -->
+    <div class="obj-card dss">
+        <div class="obj-header"><div class="obj-title dss"><span class="cod">DSS01</span> Gestionar las operaciones</div><button class="collapse-btn" onclick="toggleObj('dss01')">▲ Colapsar</button></div>
+        <p class="obj-desc">Coordinar y ejecutar las actividades y los procedimientos operativos necesarios para prestar los servicios de TI interna y externamente.</p>
+        <div class="obj-body" id="dss01-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="dss01_auditor" oninput="updateObjStatus('dss01')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="dss01_fecha" onchange="updateObjStatus('dss01')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="dss01_nivel" onchange="updateObjStatus('dss01')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="dss01_meta" min="0" max="5" oninput="updateObjStatus('dss01')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="dss01_resultado" onchange="updateObjStatus('dss01')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="dss01_evidencia" oninput="updateObjStatus('dss01')"></div>
+                <div class="form-group full"><label>Gestión de operaciones de TI</label><textarea id="dss01_desc" rows="2" placeholder="Procedimientos operativos, monitoreo, turnos, alertas..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="dss01_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="dss01_recom" rows="2"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>Procedimientos operativos documentados y vigentes</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Monitoreo continuo de la infraestructura y servicios</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Gestión de eventos y alertas de producción</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Procedimientos de backup y restauración probados</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- DSS02 -->
+    <div class="obj-card dss">
+        <div class="obj-header"><div class="obj-title dss"><span class="cod">DSS02</span> Gestionar las solicitudes e incidentes de servicio</div><button class="collapse-btn" onclick="toggleObj('dss02')">▲ Colapsar</button></div>
+        <p class="obj-desc">Proporcionar una respuesta oportuna y eficaz a las solicitudes de los usuarios y la resolución de todos los tipos de incidentes; restaurar el servicio normal.</p>
+        <div class="obj-body" id="dss02-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="dss02_auditor" oninput="updateObjStatus('dss02')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="dss02_fecha" onchange="updateObjStatus('dss02')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="dss02_nivel" onchange="updateObjStatus('dss02')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="dss02_meta" min="0" max="5" oninput="updateObjStatus('dss02')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="dss02_resultado" onchange="updateObjStatus('dss02')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="dss02_evidencia" oninput="updateObjStatus('dss02')"></div>
+                <div class="form-group full"><label>Proceso de gestión de incidentes y solicitudes</label><textarea id="dss02_desc" rows="2" placeholder="Mesa de ayuda, ITSM, SLAs de respuesta, escalamientos..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="dss02_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="dss02_recom" rows="2"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>Sistema ITSM o mesa de ayuda implementado</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>SLAs de atención de incidentes definidos y monitoreados</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Proceso de escalamiento de incidentes documentado</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Reporte periódico de incidentes a la gerencia</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- DSS03 -->
+    <div class="obj-card dss">
+        <div class="obj-header"><div class="obj-title dss"><span class="cod">DSS03</span> Gestionar los problemas</div><button class="collapse-btn" onclick="toggleObj('dss03')">▲ Colapsar</button></div>
+        <p class="obj-desc">Identificar y clasificar los problemas y sus causas raíz, así como proporcionar resolución oportuna para prevenir incidentes recurrentes.</p>
+        <div class="obj-body" id="dss03-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="dss03_auditor" oninput="updateObjStatus('dss03')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="dss03_fecha" onchange="updateObjStatus('dss03')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="dss03_nivel" onchange="updateObjStatus('dss03')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="dss03_meta" min="0" max="5" oninput="updateObjStatus('dss03')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="dss03_resultado" onchange="updateObjStatus('dss03')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="dss03_evidencia" oninput="updateObjStatus('dss03')"></div>
+                <div class="form-group full"><label>Gestión de problemas de TI</label><textarea id="dss03_desc" rows="2" placeholder="Base de errores conocidos, análisis causa raíz, KEDB..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="dss03_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="dss03_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DSS04 -->
+    <div class="obj-card dss">
+        <div class="obj-header"><div class="obj-title dss"><span class="cod">DSS04</span> Gestionar la continuidad</div><button class="collapse-btn" onclick="toggleObj('dss04')">▲ Colapsar</button></div>
+        <p class="obj-desc">Establecer y mantener un plan para permitir que el negocio y TI respondan a incidentes e interrupciones del servicio para la continuación de los procesos críticos.</p>
+        <div class="obj-body" id="dss04-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="dss04_auditor" oninput="updateObjStatus('dss04')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="dss04_fecha" onchange="updateObjStatus('dss04')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="dss04_nivel" onchange="updateObjStatus('dss04')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="dss04_meta" min="0" max="5" oninput="updateObjStatus('dss04')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="dss04_resultado" onchange="updateObjStatus('dss04')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="dss04_evidencia" oninput="updateObjStatus('dss04')"></div>
+                <div class="form-group full"><label>Plan de continuidad del negocio / DRP</label><textarea id="dss04_desc" rows="2" placeholder="BCP, DRP, pruebas de recuperación, RTO/RPO definidos..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="dss04_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="dss04_recom" rows="2"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>BCP/DRP documentado y actualizado</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>RTO y RPO definidos para sistemas críticos</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Pruebas periódicas del DRP realizadas</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- DSS05 -->
+    <div class="obj-card dss">
+        <div class="obj-header"><div class="obj-title dss"><span class="cod">DSS05</span> Gestionar los servicios de seguridad</div><button class="collapse-btn" onclick="toggleObj('dss05')">▲ Colapsar</button></div>
+        <p class="obj-desc">Proteger la información empresarial para mantener el nivel de riesgo de seguridad aceptable para la empresa de acuerdo con la política de seguridad.</p>
+        <div class="obj-body" id="dss05-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="dss05_auditor" oninput="updateObjStatus('dss05')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="dss05_fecha" onchange="updateObjStatus('dss05')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="dss05_nivel" onchange="updateObjStatus('dss05')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="dss05_meta" min="0" max="5" oninput="updateObjStatus('dss05')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="dss05_resultado" onchange="updateObjStatus('dss05')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="dss05_evidencia" oninput="updateObjStatus('dss05')"></div>
+                <div class="form-group full"><label>Controles de seguridad operativa</label><textarea id="dss05_desc" rows="2" placeholder="Gestión de accesos, antivirus, firewall, pruebas de penetración..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="dss05_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="dss05_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DSS06 -->
+    <div class="obj-card dss">
+        <div class="obj-header"><div class="obj-title dss"><span class="cod">DSS06</span> Gestionar los controles de los procesos de negocio</div><button class="collapse-btn" onclick="toggleObj('dss06')">▲ Colapsar</button></div>
+        <p class="obj-desc">Definir y mantener controles apropiados de proceso de negocio para asegurar que la información relacionada y procesada satisfaga todos los criterios de información relevantes.</p>
+        <div class="obj-body" id="dss06-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="dss06_auditor" oninput="updateObjStatus('dss06')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="dss06_fecha" onchange="updateObjStatus('dss06')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="dss06_nivel" onchange="updateObjStatus('dss06')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="dss06_meta" min="0" max="5" oninput="updateObjStatus('dss06')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="dss06_resultado" onchange="updateObjStatus('dss06')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="dss06_evidencia" oninput="updateObjStatus('dss06')"></div>
+                <div class="form-group full"><label>Controles de procesos de negocio soportados por TI</label><textarea id="dss06_desc" rows="2" placeholder="Controles de entrada, proceso y salida; conciliaciones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="dss06_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="dss06_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DOMINIO MEA: MONITOREAR, EVALUAR Y VALORAR (4 objetivos) ===== -->
+<div class="tab-content" id="tab-mea">
+    <div class="domain-header mea">
+        <h2>📏 MEA — Monitorear, Evaluar y Valorar</h2>
+        <p>Evalúa el desempeño de los procesos de TI comparándolos con los objetivos de desempeño y proporciona a la dirección evidencias de conformidad con los requisitos.</p>
+        <div class="domain-kpis">
+            <div class="dom-kpi"><div class="dk-val" id="mea-completados">0/4</div><div class="dk-lab">Objetivos completados</div></div>
+            <div class="dom-kpi"><div class="dk-val" id="mea-nivel-prom">—</div><div class="dk-lab">Nivel promedio</div></div>
+        </div>
+    </div>
+
+    <!-- MEA01 -->
+    <div class="obj-card mea">
+        <div class="obj-header"><div class="obj-title mea"><span class="cod">MEA01</span> Gestionar el monitoreo del desempeño y la conformidad</div><button class="collapse-btn" onclick="toggleObj('mea01')">▲ Colapsar</button></div>
+        <p class="obj-desc">Recopilar, validar y evaluar las métricas de negocio y de TI; monitorear que los procesos se ejecutan según los niveles de desempeño y conformidad acordados.</p>
+        <div class="obj-body" id="mea01-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="mea01_auditor" oninput="updateObjStatus('mea01')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="mea01_fecha" onchange="updateObjStatus('mea01')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="mea01_nivel" onchange="updateObjStatus('mea01')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="mea01_meta" min="0" max="5" oninput="updateObjStatus('mea01')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="mea01_resultado" onchange="updateObjStatus('mea01')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="mea01_evidencia" oninput="updateObjStatus('mea01')"></div>
+                <div class="form-group full"><label>Sistema de monitoreo y métricas de TI</label><textarea id="mea01_desc" rows="2" placeholder="KPIs, dashboard, BSC, reportes de desempeño..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="mea01_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="mea01_recom" rows="2"></textarea></div>
+            </div>
+            <div class="table-wrapper" style="margin-top:10px;"><table class="criteria-table"><thead><tr><th>Criterio</th><th>¿Existe?</th><th>Evidencia</th><th>Puntaje</th><th>Obs.</th></tr></thead><tbody>
+                <tr><td>Conjunto de KPIs de TI definido y aprobado</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Reporte de desempeño periódico a la dirección</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+                <tr><td>Proceso de seguimiento de acciones correctivas</td><td><select><option value="">—</option><option>Sí</option><option>No</option><option>Parcial</option></select></td><td><input type="text"></td><td><select><option value="">—</option><option value="100">100</option><option value="50">50</option><option value="0">0</option></select></td><td><input type="text"></td></tr>
+            </tbody></table></div>
+        </div>
+    </div>
+
+    <!-- MEA02 -->
+    <div class="obj-card mea">
+        <div class="obj-header"><div class="obj-title mea"><span class="cod">MEA02</span> Gestionar el sistema de control interno</div><button class="collapse-btn" onclick="toggleObj('mea02')">▲ Colapsar</button></div>
+        <p class="obj-desc">Monitorear y evaluar continuamente el entorno de control para incluir las autoevaluaciones y las revisiones de aseguramiento independiente.</p>
+        <div class="obj-body" id="mea02-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="mea02_auditor" oninput="updateObjStatus('mea02')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="mea02_fecha" onchange="updateObjStatus('mea02')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="mea02_nivel" onchange="updateObjStatus('mea02')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="mea02_meta" min="0" max="5" oninput="updateObjStatus('mea02')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="mea02_resultado" onchange="updateObjStatus('mea02')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="mea02_evidencia" oninput="updateObjStatus('mea02')"></div>
+                <div class="form-group full"><label>Sistema de control interno de TI</label><textarea id="mea02_desc" rows="2" placeholder="COSO, autoevaluaciones, revisiones independientes, SOX..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="mea02_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="mea02_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEA03 -->
+    <div class="obj-card mea">
+        <div class="obj-header"><div class="obj-title mea"><span class="cod">MEA03</span> Gestionar el cumplimiento de requisitos externos</div><button class="collapse-btn" onclick="toggleObj('mea03')">▲ Colapsar</button></div>
+        <p class="obj-desc">Evaluar que los procesos de TI y los procesos empresariales respaldados por TI cumplan con las leyes, reglamentos y requisitos contractuales.</p>
+        <div class="obj-body" id="mea03-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="mea03_auditor" oninput="updateObjStatus('mea03')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="mea03_fecha" onchange="updateObjStatus('mea03')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="mea03_nivel" onchange="updateObjStatus('mea03')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="mea03_meta" min="0" max="5" oninput="updateObjStatus('mea03')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="mea03_resultado" onchange="updateObjStatus('mea03')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="mea03_evidencia" oninput="updateObjStatus('mea03')"></div>
+                <div class="form-group full"><label>Gestión del cumplimiento normativo</label><textarea id="mea03_desc" rows="2" placeholder="Mapa normativo, seguimiento de cumplimiento, reportes a reguladores..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="mea03_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="mea03_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEA04 -->
+    <div class="obj-card mea">
+        <div class="obj-header"><div class="obj-title mea"><span class="cod">MEA04</span> Gestionar el aseguramiento</div><button class="collapse-btn" onclick="toggleObj('mea04')">▲ Colapsar</button></div>
+        <p class="obj-desc">Obtener confirmación de que los servicios e infraestructura de TI están en línea con los objetivos del negocio, mediante evaluaciones independientes de aseguramiento.</p>
+        <div class="obj-body" id="mea04-body">
+            <div class="form-grid">
+                <div class="form-group"><label>Auditor responsable</label><input type="text" id="mea04_auditor" oninput="updateObjStatus('mea04')"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="mea04_fecha" onchange="updateObjStatus('mea04')"></div>
+                <div class="form-group"><label>Nivel actual *</label><select id="mea04_nivel" onchange="updateObjStatus('mea04')"><option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+                <div class="form-group"><label>Nivel meta</label><input type="number" id="mea04_meta" min="0" max="5" oninput="updateObjStatus('mea04')"></div>
+                <div class="form-group"><label>Resultado *</label><select id="mea04_resultado" onchange="updateObjStatus('mea04')"><option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option></select></div>
+                <div class="form-group"><label>Ref. evidencia</label><input type="text" id="mea04_evidencia" oninput="updateObjStatus('mea04')"></div>
+                <div class="form-group full"><label>Programa de aseguramiento de TI</label><textarea id="mea04_desc" rows="2" placeholder="Auditorías independientes, revisiones de pares, certificaciones..."></textarea></div>
+                <div class="form-group full"><label>Hallazgos</label><textarea id="mea04_hallazgo" rows="2"></textarea></div>
+                <div class="form-group full"><label>Recomendación</label><textarea id="mea04_recom" rows="2"></textarea></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== RIESGOS ===== -->
+<div class="tab-content" id="tab-riesgos">
+    <div class="card">
+        <h2><span class="step">🔸</span> Riesgos de la Auditoría</h2>
+        <p class="subtitle">Riesgos propios del trabajo de auditoría. Documente y mitigue.</p>
+        <div class="table-wrapper"><table><thead><tr><th>N°</th><th>Riesgo</th><th>Descripción</th><th>Prob. (1-5)</th><th>Impacto (1-5)</th><th>Nivel</th><th>Estrategia</th></tr></thead><tbody id="riesgosBody"></tbody></table></div>
+    </div>
+</div>
+
+<!-- ===== EVIDENCIAS ===== -->
+<div class="tab-content" id="tab-evidencias">
+    <div class="card">
+        <h2><span class="step">🔸</span> Solicitud de Evidencias (PBC)</h2>
+        <p class="subtitle">Registro de lo solicitado al auditado y su estado de recepción.</p>
+        <div class="table-wrapper"><table id="tablaEvidencias"><thead><tr><th>N°</th><th>Objetivo</th><th>Documento solicitado</th><th>Área responsable</th><th>Fecha solicitud</th><th>Fecha compromiso</th><th>Fecha recepción</th><th>Estado</th><th>Obs.</th></tr></thead><tbody id="evidenciasBody"></tbody></table></div>
+    </div>
+</div>
+
+<!-- ===== PROGRAMA ===== -->
+<div class="tab-content" id="tab-programa">
+    <div class="card">
+        <h2><span class="step">🔸</span> Programa de Auditoría</h2>
+        <p class="subtitle">Un procedimiento por objetivo en alcance.</p>
+        <div class="table-wrapper"><table id="tablaPrograma"><thead><tr><th>Código</th><th>Objetivo</th><th>En alcance</th><th>Procedimiento de auditoría</th><th>Resultado *</th><th>Puntaje</th><th>Tipo prueba</th><th>Ref. Evidencia</th></tr></thead><tbody id="programaBody"></tbody></table></div>
+        <div class="kpi-grid" style="margin-top:14px;">
+            <div class="kpi"><div class="label">Cumplimiento promedio</div><div class="value" id="kpiProgProm">—</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MUESTREO ===== -->
+<div class="tab-content" id="tab-muestreo">
+    <div class="card">
+        <h2><span class="step">🔸</span> Muestreo y Pruebas</h2>
+        <p class="subtitle">Defina población y muestra para sustentar los resultados.</p>
+        <div class="table-wrapper"><table><thead><tr><th>N°</th><th>Objetivo</th><th>Población</th><th>Muestra</th><th>Método</th><th>Criterio</th><th>Resultado</th></tr></thead><tbody id="muestreoBody"></tbody></table></div>
+    </div>
+</div>
+
+<!-- ===== CAPACIDAD ===== -->
+<div class="tab-content" id="tab-capacidad">
+    <div class="card">
+        <h2><span class="step">🔸</span> Evaluación de Capacidad</h2>
+        <p class="subtitle">Nivel actual (0-5) consolidado de los 40 objetivos.</p>
+        <div class="table-wrapper"><table id="tablaCapacidad"><thead><tr><th>Código</th><th>Objetivo</th><th>En alcance</th><th>Nivel actual *</th><th>Nivel meta</th><th>Brecha</th><th>Estado</th><th>Nivel (nombre)</th></tr></thead><tbody id="capacidadBody"></tbody></table></div>
+        <div class="kpi-grid" style="margin-top:14px;">
+            <div class="kpi"><div class="label">Nivel actual promedio</div><div class="value" id="kpiCapProm">—</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== HALLAZGOS ===== -->
+<div class="tab-content" id="tab-hallazgos">
+    <div class="card">
+        <h2><span class="step">🔸</span> Matriz de Hallazgos</h2>
+        <p class="subtitle">Riesgo = probabilidad × impacto.</p>
+        <div class="table-wrapper"><table id="tablaHallazgos"><thead><tr><th>N°</th><th>Objetivo</th><th>Título</th><th>Condición</th><th>Prob. *</th><th>Impacto *</th><th>Riesgo</th><th>Clasificación</th><th>Responsable</th></tr></thead><tbody id="hallazgosBody"></tbody></table></div>
+    </div>
+</div>
+
+<!-- ===== PLAN ACCIÓN ===== -->
+<div class="tab-content" id="tab-plan">
+    <div class="card">
+        <h2><span class="step">🔸</span> Plan de Acción</h2>
+        <p class="subtitle">Seguimiento con semáforo automático.</p>
+        <div class="table-wrapper"><table id="tablaPlan"><thead><tr><th>N° acción</th><th>Hallazgo</th><th>Acción correctiva</th><th>Responsable</th><th>Fecha fin</th><th>% avance</th><th>Estado</th><th>Días rest.</th><th>Semáforo</th></tr></thead><tbody id="planBody"></tbody></table></div>
+    </div>
+</div>
+
+<!-- ===== RESUMEN ===== -->
+<div class="tab-content" id="tab-resumen">
+    <div class="card">
+        <h2><span class="step">🔸</span> Resumen Ejecutivo por Dominio</h2>
+        <p class="subtitle">Panel calculado automáticamente a partir de las evaluaciones individuales.</p>
+        <div class="table-wrapper"><table><thead><tr><th>Dominio</th><th>Objetivos totales</th><th>En alcance</th><th>Nivel actual prom.</th><th>Nivel meta prom.</th><th>Brecha prom.</th><th>Cumplimiento %</th></tr></thead><tbody id="resumenBody"></tbody></table></div>
+        <div class="kpi-grid" style="margin-top:16px;">
+            <div class="kpi"><div class="label">Total objetivos evaluados</div><div class="value" id="kpiResTotal">0</div><div class="sub">de 40</div></div>
+            <div class="kpi"><div class="label">Nivel promedio global</div><div class="value" id="kpiResNivel">—</div></div>
+            <div class="kpi"><div class="label">Cumplimiento global</div><div class="value" id="kpiResCump">—</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== INFORME ===== -->
+<div class="tab-content" id="tab-informe">
+    <div class="card">
+        <h2><span class="step">🔸</span> Informe y Dictamen</h2>
+        <p class="subtitle">Conclusiones formales y firmas.</p>
+        <div class="form-grid">
+            <div class="form-group"><label>Opinión del auditor *</label>
+                <select id="i_opinion" onchange="validateField(this)"><option value="">Seleccione...</option><option value="Satisfactorio">Satisfactorio</option><option value="Con observaciones">Con observaciones</option><option value="Insatisfactorio">Insatisfactorio</option></select>
+            </div>
+            <div class="form-group"><label>Firma del auditor líder *</label><input type="text" id="i_firma" placeholder="Nombre y firma" oninput="validateField(this)"></div>
+            <div class="form-group full"><label>Conclusiones generales</label><textarea id="i_conclusiones" rows="4" placeholder="Resuma los principales hallazgos y recomendaciones de la auditoría..."></textarea></div>
+            <div class="form-group full"><label>Limitaciones al alcance</label><textarea id="i_limitaciones" rows="2" placeholder="Indique si hubo limitaciones al trabajo de auditoría..."></textarea></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATOS BASE ============ */
+const ESCALAS_DEFAULT = [
+    { nivel:0, nombre:'Incompleto', desc:'El proceso no se implementa o no logra su propósito.' },
+    { nivel:1, nombre:'Realizado',  desc:'Logra su propósito de forma informal y no planificada.' },
+    { nivel:2, nombre:'Gestionado', desc:'Planificado, monitoreado y ajustado; productos controlados.' },
+    { nivel:3, nombre:'Definido',   desc:'Proceso estándar definido y documentado en toda la organización.' },
+    { nivel:4, nombre:'Medible',    desc:'Opera dentro de límites definidos y se mide cuantitativamente.' },
+    { nivel:5, nombre:'Optimizado', desc:'Mejora continua para responder a cambios y metas empresariales.' }
+];
+
+const FACTORES = [
+    { n:1,  nombre:"Estrategia empresarial",         evaluar:"Estrategia dominante: crecimiento, innovación, servicio al cliente o costo." },
+    { n:2,  nombre:"Metas empresariales",             evaluar:"Metas de la empresa y su dependencia de las capacidades de TI." },
+    { n:3,  nombre:"Perfil de riesgo",                evaluar:"Escenarios de riesgo de I&T y apetito de riesgo." },
+    { n:4,  nombre:"Problemas relacionados con TI",   evaluar:"Incidentes recurrentes, sobrecostos, retrasos, fallas de seguridad." },
+    { n:5,  nombre:"Panorama de amenazas",            evaluar:"Entorno de amenazas externas: ciberataques, fraude, espionaje." },
+    { n:6,  nombre:"Requisitos de cumplimiento",      evaluar:"Regulación aplicable: supervisores, protección de datos, normas sectoriales." },
+    { n:7,  nombre:"Rol de TI",                       evaluar:"Rol de TI: soporte, factoría, giro o estratégico." },
+    { n:8,  nombre:"Modelo de abastecimiento de TI",  evaluar:"Servicios internos, tercerizados, en la nube o híbridos." },
+    { n:9,  nombre:"Métodos de implementación de TI", evaluar:"Enfoque de desarrollo y entrega: tradicional, ágil, DevOps." },
+    { n:10, nombre:"Estrategia de adopción de tecnología", evaluar:"Seguidor, adoptante temprano o pionero en tecnología." },
+    { n:11, nombre:"Tamaño de la empresa",            evaluar:"Tamaño y complejidad de la organización." }
+];
+
+const OBJETIVOS = [
+    { cod:"EDM01", dom:"EDM", nom:"Asegurar el establecimiento y mantenimiento del marco de gobierno" },
+    { cod:"EDM02", dom:"EDM", nom:"Asegurar la entrega de beneficios" },
+    { cod:"EDM03", dom:"EDM", nom:"Asegurar la optimización del riesgo" },
+    { cod:"EDM04", dom:"EDM", nom:"Asegurar la optimización de recursos" },
+    { cod:"EDM05", dom:"EDM", nom:"Asegurar el involucramiento de las partes interesadas" },
+    { cod:"APO01", dom:"APO", nom:"Gestionar el marco de gestión de I&T" },
+    { cod:"APO02", dom:"APO", nom:"Gestionar la estrategia" },
+    { cod:"APO03", dom:"APO", nom:"Gestionar la arquitectura empresarial" },
+    { cod:"APO04", dom:"APO", nom:"Gestionar la innovación" },
+    { cod:"APO05", dom:"APO", nom:"Gestionar el portafolio" },
+    { cod:"APO06", dom:"APO", nom:"Gestionar el presupuesto y los costos" },
+    { cod:"APO07", dom:"APO", nom:"Gestionar los recursos humanos" },
+    { cod:"APO08", dom:"APO", nom:"Gestionar las relaciones" },
+    { cod:"APO09", dom:"APO", nom:"Gestionar los acuerdos de servicio" },
+    { cod:"APO10", dom:"APO", nom:"Gestionar los proveedores" },
+    { cod:"APO11", dom:"APO", nom:"Gestionar la calidad" },
+    { cod:"APO12", dom:"APO", nom:"Gestionar el riesgo" },
+    { cod:"APO13", dom:"APO", nom:"Gestionar la seguridad" },
+    { cod:"APO14", dom:"APO", nom:"Gestionar los datos" },
+    { cod:"BAI01", dom:"BAI", nom:"Gestionar programas" },
+    { cod:"BAI02", dom:"BAI", nom:"Gestionar la definición de requisitos" },
+    { cod:"BAI03", dom:"BAI", nom:"Gestionar la identificación y construcción de soluciones" },
+    { cod:"BAI04", dom:"BAI", nom:"Gestionar la disponibilidad y capacidad" },
+    { cod:"BAI05", dom:"BAI", nom:"Gestionar el cambio organizacional" },
+    { cod:"BAI06", dom:"BAI", nom:"Gestionar los cambios de TI" },
+    { cod:"BAI07", dom:"BAI", nom:"Gestionar la aceptación y transición de cambios de TI" },
+    { cod:"BAI08", dom:"BAI", nom:"Gestionar el conocimiento" },
+    { cod:"BAI09", dom:"BAI", nom:"Gestionar los activos" },
+    { cod:"BAI10", dom:"BAI", nom:"Gestionar la configuración" },
+    { cod:"BAI11", dom:"BAI", nom:"Gestionar proyectos" },
+    { cod:"DSS01", dom:"DSS", nom:"Gestionar las operaciones" },
+    { cod:"DSS02", dom:"DSS", nom:"Gestionar las solicitudes e incidentes de servicio" },
+    { cod:"DSS03", dom:"DSS", nom:"Gestionar los problemas" },
+    { cod:"DSS04", dom:"DSS", nom:"Gestionar la continuidad" },
+    { cod:"DSS05", dom:"DSS", nom:"Gestionar los servicios de seguridad" },
+    { cod:"DSS06", dom:"DSS", nom:"Gestionar los controles de los procesos de negocio" },
+    { cod:"MEA01", dom:"MEA", nom:"Gestionar el monitoreo del desempeño y la conformidad" },
+    { cod:"MEA02", dom:"MEA", nom:"Gestionar el sistema de control interno" },
+    { cod:"MEA03", dom:"MEA", nom:"Gestionar el cumplimiento de requisitos externos" },
+    { cod:"MEA04", dom:"MEA", nom:"Gestionar el aseguramiento" }
+];
+
+const RIESGOS = [
+    { n:1, riesgo:"Limitación de acceso",       desc:"El auditado no proporciona información completa o a tiempo.", prob:3, impact:4, estrategia:"Solicitar por escrito con plazos y escalar." },
+    { n:2, riesgo:"Calidad de evidencia",        desc:"Documentos incompletos, sin firmas o inconsistentes.", prob:4, impact:3, estrategia:"Verificar integridad y solicitar fuentes primarias." },
+    { n:3, riesgo:"Alcance insuficiente",        desc:"Exclusión de procesos críticos.", prob:2, impact:5, estrategia:"Documentar justificación y comunicar al comité." },
+    { n:4, riesgo:"Conflictos de interés",       desc:"Personal auditado con relación directa al auditor.", prob:2, impact:4, estrategia:"Declaración de independencia." },
+    { n:5, riesgo:"Sesgo del auditor",           desc:"Conclusiones influenciadas por experiencias previas.", prob:2, impact:3, estrategia:"Revisión por pares y supervisión." }
+];
+
+const EVIDENCIAS = [
+    { n:1, obj:"EDM01", doc:"Política de gobierno de TI",   area:"Gerencia General", fsol:"2026-01-10", fcomp:"2026-01-17", frec:"", estado:"Pendiente", obs:"" },
+    { n:2, obj:"APO01", doc:"Manual de procesos de TI",      area:"Gerencia de TI",   fsol:"2026-01-10", fcomp:"2026-01-20", frec:"", estado:"Pendiente", obs:"" },
+    { n:3, obj:"DSS02", doc:"Reporte de incidentes 2025",    area:"Mesa de Ayuda",    fsol:"2026-01-12", fcomp:"2026-01-19", frec:"", estado:"Pendiente", obs:"" }
+];
+
+/* ============ ESTADO DE OBJETIVOS ============ */
+// Lleva el estado de llenado de cada formulario de objetivo individual
+const objStatus = {};
+
+function updateObjStatus(cod) {
+    const nivel = document.getElementById(cod + '_nivel');
+    const resultado = document.getElementById(cod + '_resultado');
+    const filled = (nivel && nivel.value !== '') && (resultado && resultado.value !== '');
+    objStatus[cod] = filled;
+    updateDomainCounters();
+    updateResumen();
+    updateGlobalProgress();
+}
+
+function updateDomainCounters() {
+    const domains = {
+        edm: ['edm01','edm02','edm03','edm04','edm05'],
+        apo: ['apo01','apo02','apo03','apo04','apo05','apo06','apo07','apo08','apo09','apo10','apo11','apo12','apo13','apo14'],
+        bai: ['bai01','bai02','bai03','bai04','bai05','bai06','bai07','bai08','bai09','bai10','bai11'],
+        dss: ['dss01','dss02','dss03','dss04','dss05','dss06'],
+        mea: ['mea01','mea02','mea03','mea04']
+    };
+    for (const [dom, codes] of Object.entries(domains)) {
+        const done = codes.filter(c => objStatus[c]).length;
+        const el = document.getElementById(dom + '-completados');
+        if (el) el.textContent = `${done}/${codes.length}`;
+        // Nivel promedio
+        let suma = 0, cnt = 0;
+        codes.forEach(c => {
+            const sel = document.getElementById(c + '_nivel');
+            if (sel && sel.value !== '') { suma += parseInt(sel.value); cnt++; }
+        });
+        const promEl = document.getElementById(dom + '-nivel-prom');
+        if (promEl) promEl.textContent = cnt > 0 ? (suma/cnt).toFixed(1) : '—';
+    }
+}
+
+function updateResumen() {
+    const tbody = document.getElementById('resumenBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const dominios = ['EDM','APO','BAI','DSS','MEA'];
+    let totalEval = 0, totalNivel = 0, totalCump = 0, totalObjs = 0;
+    dominios.forEach(dom => {
+        const objs = OBJETIVOS.filter(o => o.dom === dom);
+        let nivelSum = 0, nivelCnt = 0, metaSum = 0, cumpSum = 0, cumpCnt = 0, enAlc = 0;
+        objs.forEach(o => {
+            const cod = o.cod.toLowerCase();
+            const inc = document.getElementById(`alc-inc-${OBJETIVOS.indexOf(o)}`);
+            if (inc && inc.value === 'Sí') {
+                enAlc++;
+                const nivelEl = document.getElementById(cod + '_nivel');
+                const metaEl  = document.getElementById(cod + '_meta');
+                const resEl   = document.getElementById(cod + '_resultado');
+                if (nivelEl && nivelEl.value !== '') { nivelSum += parseInt(nivelEl.value); nivelCnt++; }
+                if (metaEl  && metaEl.value  !== '') { metaSum  += parseInt(metaEl.value); }
+                if (resEl   && resEl.value   !== '') {
+                    cumpSum += resEl.value === 'Cumple' ? 100 : resEl.value === 'Parcial' ? 50 : 0;
+                    cumpCnt++;
+                }
+            }
+        });
+        const nivelProm = nivelCnt > 0 ? (nivelSum/nivelCnt).toFixed(1) : '—';
+        const metaProm  = enAlc   > 0 ? (metaSum/enAlc).toFixed(1)   : '—';
+        const brecha    = (nivelCnt > 0 && enAlc > 0) ? ((metaSum/enAlc) - (nivelSum/nivelCnt)).toFixed(1) : '—';
+        const cump      = cumpCnt > 0 ? (cumpSum/cumpCnt).toFixed(0) + '%' : '—';
+        if (nivelCnt > 0) { totalNivel += nivelSum; totalEval += nivelCnt; }
+        if (cumpCnt > 0)  { totalCump  += cumpSum;  totalObjs += cumpCnt; }
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${dom}</strong></td><td>${objs.length}</td><td>${enAlc}</td><td>${nivelProm}</td><td>${metaProm}</td><td>${brecha}</td><td>${cump}</td>`;
+        tbody.appendChild(tr);
+    });
+    const kpiTotal = document.getElementById('kpiResTotal');
+    const kpiNivel = document.getElementById('kpiResNivel');
+    const kpiCump  = document.getElementById('kpiResCump');
+    if (kpiTotal) kpiTotal.textContent = totalEval;
+    if (kpiNivel) kpiNivel.textContent = totalEval > 0 ? (totalNivel/totalEval).toFixed(1) : '—';
+    if (kpiCump)  kpiCump.textContent  = totalObjs > 0 ? (totalCump/totalObjs).toFixed(0) + '%' : '—';
+}
+
+/* ============ COLLAPSE ============ */
+function toggleObj(cod) {
+    const body = document.getElementById(cod + '-body');
+    const btn = body.previousElementSibling.previousElementSibling.querySelector('.collapse-btn');
+    if (!body || !btn) return;
+    if (body.style.display === 'none') { body.style.display = ''; btn.textContent = '▲ Colapsar'; }
+    else { body.style.display = 'none'; btn.textContent = '▼ Expandir'; }
+}
+
+/* ============ INIT ESCALAS ============ */
+function initEscalas() {
+    const tbody = document.getElementById('escalasBody');
+    tbody.innerHTML = '';
+    ESCALAS_DEFAULT.forEach((e, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${e.nivel}</strong></td>
+            <td><input type="text" id="esc-nom-${i}" value="${e.nombre}" style="width:150px;"></td>
+            <td><textarea id="esc-desc-${i}" rows="2" style="width:100%;min-width:300px;">${e.desc}</textarea></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+/* ============ INIT FACTORES ============ */
+function initFactores() {
+    const tbody = document.getElementById('factoresBody');
+    tbody.innerHTML = '';
+    FACTORES.forEach((f, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${f.n}</td><td><strong>${f.nombre}</strong></td><td><small>${f.evaluar}</small></td>
+            <td><select id="factor-val-${i}" onchange="updateFactor(${i})" style="width:100px;">
+                <option value="">—</option><option value="Bajo">Bajo</option><option value="Medio">Medio</option><option value="Alto">Alto</option>
+            </select></td>
+            <td id="fval-${i}">—</td>
+            <td><input type="number" min="1" max="5" value="3" onchange="updateFactor(${i})" style="width:60px;"></td>
+            <td id="fpun-${i}">—</td>
+            <td><input type="text" placeholder="Obs..." style="width:120px;"></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateFactor(i) {
+    const sel = document.getElementById(`factor-val-${i}`);
+    const val = sel.value;
+    const valorNum = val === 'Bajo' ? 1 : val === 'Medio' ? 2 : val === 'Alto' ? 3 : '';
+    const peso = parseInt(sel.closest('tr').querySelector('input[type="number"]').value) || 0;
+    document.getElementById(`fval-${i}`).textContent = valorNum || '—';
+    document.getElementById(`fpun-${i}`).textContent = valorNum ? (valorNum * peso) : '—';
+    if (val) { sel.classList.remove('invalid-input'); sel.classList.add('valid-input'); }
+    else     { sel.classList.add('invalid-input'); sel.classList.remove('valid-input'); }
+    calcularExigencia();
+    updateGlobalProgress();
+}
+
+function calcularExigencia() {
+    let suma = 0, pesoT = 0, valorados = 0;
+    FACTORES.forEach((_, i) => {
+        const val = document.getElementById(`factor-val-${i}`).value;
+        if (val) {
+            valorados++;
+            const vn  = val === 'Bajo' ? 1 : val === 'Medio' ? 2 : 3;
+            const p   = parseInt(document.getElementById(`factor-val-${i}`).closest('tr').querySelector('input[type="number"]').value) || 0;
+            suma  += vn * p; pesoT += p;
+        }
+    });
+    const idx = pesoT > 0 ? (suma / (3 * pesoT)) : '';
+    document.getElementById('kpiFactoresVal').textContent = `${valorados} / 11`;
+    const kpi  = document.getElementById('kpiExigencia');
+    const lect = document.getElementById('kpiExigenciaLectura');
+    if (idx === '' || isNaN(idx)) { kpi.textContent = '—'; kpi.className = 'value'; lect.textContent = 'Valore los factores'; }
+    else {
+        kpi.textContent = idx.toFixed(2);
+        if (idx >= 0.67)      { kpi.className = 'value danger';  lect.textContent = 'Exigencia ALTA → meta 4'; }
+        else if (idx >= 0.34) { kpi.className = 'value warning'; lect.textContent = 'Exigencia MEDIA → meta 3'; }
+        else                  { kpi.className = 'value success'; lect.textContent = 'Exigencia BAJA → meta 2'; }
+    }
+}
+
+/* ============ INIT ALCANCE ============ */
+function initAlcance() {
+    const tbody = document.getElementById('alcanceBody');
+    tbody.innerHTML = '';
+    OBJETIVOS.forEach((o, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${o.cod}</strong></td><td><small>${o.dom}</small></td><td><small>${o.nom}</small></td>
+            <td><select id="alc-prio-${i}" onchange="updateAlcance(${i})" style="width:80px;">
+                <option value="Baja">Baja</option><option value="Media" selected>Media</option><option value="Alta">Alta</option></select></td>
+            <td><select id="alc-inc-${i}" onchange="updateAlcance(${i})" style="width:70px;">
+                <option value="Sí" selected>Sí</option><option value="No">No</option></select></td>
+            <td id="meta-${i}">3</td>
+            <td><input type="text" id="alc-just-${i}" placeholder="Justifique..." oninput="updateAlcance(${i})" style="width:150px;"></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateAlcance(i) {
+    const prio  = document.getElementById(`alc-prio-${i}`).value;
+    const enalc = document.getElementById(`alc-inc-${i}`).value;
+    const just  = document.getElementById(`alc-just-${i}`);
+    const meta  = prio === 'Alta' ? 4 : prio === 'Media' ? 3 : 2;
+    document.getElementById(`meta-${i}`).textContent = meta;
+    if (enalc === 'Sí' && !just.value.trim()) just.classList.add('invalid-input');
+    else just.classList.remove('invalid-input');
+    actualizarKPIsAlcance();
+    updateGlobalProgress();
+}
+
+function actualizarKPIsAlcance() {
+    let enAlc = 0, sinJust = 0;
+    OBJETIVOS.forEach((_, i) => {
+        if (document.getElementById(`alc-inc-${i}`).value === 'Sí') {
+            enAlc++;
+            if (!document.getElementById(`alc-just-${i}`).value.trim()) sinJust++;
+        }
+    });
+    document.getElementById('kpiAlcanceCount').textContent = enAlc;
+    const kpi = document.getElementById('kpiSinJust');
+    kpi.textContent = sinJust;
+    kpi.className   = sinJust > 0 ? 'value danger' : 'value success';
+}
+
+/* ============ INIT CAPACIDAD ============ */
+function initCapacidad() {
+    const tbody = document.getElementById('capacidadBody');
+    tbody.innerHTML = '';
+    OBJETIVOS.forEach((o, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${o.cod}</strong></td><td><small>${o.nom}</small></td>
+            <td id="cap-enalc-${i}">—</td>
+            <td><select id="cap-nivel-${i}" onchange="updateCapacidad(${i})" style="width:90px;">
+                <option value="">—</option><option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option></select></td>
+            <td id="cap-meta-${i}">—</td><td id="cap-brecha-${i}">—</td>
+            <td id="cap-estado-${i}">—</td><td id="cap-nombre-${i}">—</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateCapacidad(i) {
+    const nivel = parseInt(document.getElementById(`cap-nivel-${i}`).value);
+    const prio  = document.getElementById(`alc-prio-${i}`)?.value || 'Media';
+    const enalc = document.getElementById(`alc-inc-${i}`)?.value || 'Sí';
+    const meta  = prio === 'Alta' ? 4 : prio === 'Media' ? 3 : 2;
+    document.getElementById(`cap-meta-${i}`).textContent = meta;
+    const nombres = ESCALAS_DEFAULT.map((_, j) => document.getElementById(`esc-nom-${j}`)?.value || '');
+    if (isNaN(nivel)) {
+        ['cap-brecha','cap-estado','cap-nombre'].forEach(p => document.getElementById(`${p}-${i}`).textContent = '—');
+        if (enalc === 'Sí') document.getElementById(`cap-nivel-${i}`).classList.add('invalid-input');
+    } else {
+        document.getElementById(`cap-nombre-${i}`).textContent = nombres[nivel] || '—';
+        const brecha = Math.max(meta - nivel, 0);
+        document.getElementById(`cap-brecha-${i}`).textContent = brecha;
+        const est = brecha === 0 ? 'Alcanzado' : brecha === 1 ? 'Brecha menor' : 'Brecha crítica';
+        const cls = brecha === 0 ? 'badge-bajo'  : brecha === 1 ? 'badge-medio'  : 'badge-critico';
+        document.getElementById(`cap-estado-${i}`).innerHTML = `<span class="badge-status ${cls}">${est}</span>`;
+        document.getElementById(`cap-nivel-${i}`).classList.remove('invalid-input');
+    }
+    // Nivel promedio
+    let suma = 0, cnt = 0;
+    OBJETIVOS.forEach((_, j) => {
+        const v = parseInt(document.getElementById(`cap-nivel-${j}`)?.value);
+        if (!isNaN(v)) { suma += v; cnt++; }
+    });
+    document.getElementById('kpiCapProm').textContent = cnt > 0 ? (suma/cnt).toFixed(1) : '—';
+    updateGlobalProgress();
+}
+
+/* ============ INIT RIESGOS ============ */
+function initRiesgos() {
+    const tbody = document.getElementById('riesgosBody');
+    tbody.innerHTML = '';
+    RIESGOS.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.n}</td>
+            <td><input type="text" id="rie-nom-${i}"  value="${r.riesgo}"    style="width:160px;"></td>
+            <td><input type="text" id="rie-desc-${i}" value="${r.desc}"      style="width:220px;"></td>
+            <td><input type="number" id="rie-prob-${i}" min="1" max="5" value="${r.prob}"   style="width:60px;" onchange="updateRiesgo(${i})"></td>
+            <td><input type="number" id="rie-impact-${i}" min="1" max="5" value="${r.impact}" style="width:60px;" onchange="updateRiesgo(${i})"></td>
+            <td id="rie-nivel-${i}">—</td>
+            <td><input type="text" id="rie-estr-${i}" value="${r.estrategia}" style="width:220px;"></td>`;
+        tbody.appendChild(tr);
+        updateRiesgo(i);
+    });
+}
+function updateRiesgo(i) {
+    const p = parseInt(document.getElementById(`rie-prob-${i}`).value)   || 0;
+    const m = parseInt(document.getElementById(`rie-impact-${i}`).value) || 0;
+    const n = p * m;
+    const cl = n >= 15 ? 'critico' : n >= 8 ? 'alto' : n >= 4 ? 'medio' : 'bajo';
+    const lb = n >= 15 ? 'Crítico' : n >= 8 ? 'Alto' : n >= 4 ? 'Medio' : 'Bajo';
+    document.getElementById(`rie-nivel-${i}`).innerHTML = `<span class="badge-status badge-${cl}">${lb} (${n})</span>`;
+}
+
+/* ============ INIT EVIDENCIAS ============ */
+function initEvidencias() {
+    const tbody = document.getElementById('evidenciasBody');
+    tbody.innerHTML = '';
+    EVIDENCIAS.forEach((e, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${e.n}</td>
+            <td><input type="text"  id="ev-obj-${i}"   value="${e.obj}"    style="width:80px;"></td>
+            <td><input type="text"  id="ev-doc-${i}"   value="${e.doc}"    style="width:190px;"></td>
+            <td><input type="text"  id="ev-area-${i}"  value="${e.area}"   style="width:120px;"></td>
+            <td><input type="date"  id="ev-fsol-${i}"  value="${e.fsol}"   style="width:130px;"></td>
+            <td><input type="date"  id="ev-fcomp-${i}" value="${e.fcomp}"  style="width:130px;"></td>
+            <td><input type="date"  id="ev-frec-${i}"  value="${e.frec}"   style="width:130px;"></td>
+            <td><select id="ev-estado-${i}" style="width:110px;">
+                <option value="Pendiente" ${e.estado==='Pendiente'?'selected':''}>Pendiente</option>
+                <option value="Recibido"  ${e.estado==='Recibido'?'selected':''}>Recibido</option>
+                <option value="No aplica" ${e.estado==='No aplica'?'selected':''}>No aplica</option>
+            </select></td>
+            <td><input type="text" id="ev-obs-${i}" value="${e.obs}" style="width:110px;"></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+/* ============ INIT PROGRAMA ============ */
+function initPrograma() {
+    const tbody = document.getElementById('programaBody');
+    tbody.innerHTML = '';
+    OBJETIVOS.forEach((o, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${o.cod}</strong></td><td><small>${o.nom}</small></td>
+            <td id="prog-enalc-${i}">Sí</td>
+            <td><input type="text" id="prog-proc-${i}" placeholder="Procedimiento..." style="width:220px;"></td>
+            <td><select id="prog-result-${i}" style="width:100px;" onchange="updatePrograma(${i})">
+                <option value="">—</option><option value="Cumple">Cumple</option><option value="Parcial">Parcial</option><option value="No cumple">No cumple</option>
+            </select></td>
+            <td id="prog-punt-${i}">—</td>
+            <td><select id="prog-tipo-${i}" style="width:110px;"><option value="Documental">Documental</option><option value="Entrevista">Entrevista</option><option value="Observación">Observación</option></select></td>
+            <td><input type="text" id="prog-ref-${i}" placeholder="Ref." style="width:80px;"></td>`;
+        tbody.appendChild(tr);
+    });
+}
+function updatePrograma(i) {
+    const res = document.getElementById(`prog-result-${i}`).value;
+    const pt  = res === 'Cumple' ? 100 : res === 'Parcial' ? 50 : res === 'No cumple' ? 0 : '';
+    document.getElementById(`prog-punt-${i}`).textContent = pt !== '' ? pt : '—';
+    let s = 0, c = 0;
+    OBJETIVOS.forEach((_, j) => {
+        const r = document.getElementById(`prog-result-${j}`)?.value;
+        if (r) { s += r === 'Cumple' ? 100 : r === 'Parcial' ? 50 : 0; c++; }
+    });
+    document.getElementById('kpiProgProm').textContent = c > 0 ? (s/c).toFixed(0) + '%' : '—';
+}
+
+/* ============ INIT MUESTREO ============ */
+function initMuestreo() {
+    const tbody = document.getElementById('muestreoBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 8; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td>
+            <td><input type="text" placeholder="Objetivo" style="width:90px;"></td>
+            <td><input type="text" placeholder="Población" style="width:110px;"></td>
+            <td><input type="text" placeholder="Muestra" style="width:110px;"></td>
+            <td><input type="text" placeholder="Método" style="width:110px;"></td>
+            <td><input type="text" placeholder="Criterio" style="width:110px;"></td>
+            <td><input type="text" placeholder="Resultado" style="width:110px;"></td>`;
+        tbody.appendChild(tr);
+    }
+}
+
+/* ============ INIT HALLAZGOS ============ */
+function initHallazgos() {
+    const tbody = document.getElementById('hallazgosBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 8; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td>
+            <td><input type="text" placeholder="Objetivo" style="width:90px;"></td>
+            <td><input type="text" placeholder="Título" style="width:150px;"></td>
+            <td><input type="text" placeholder="Condición" style="width:190px;"></td>
+            <td><input type="number" min="1" max="5" placeholder="1-5" style="width:60px;" onchange="updateHallazgo(${i})"></td>
+            <td><input type="number" min="1" max="5" placeholder="1-5" style="width:60px;" onchange="updateHallazgo(${i})"></td>
+            <td id="hal-nivel-${i}">—</td><td id="hal-clasif-${i}">—</td>
+            <td><input type="text" placeholder="Responsable" style="width:110px;"></td>`;
+        tbody.appendChild(tr);
+    }
+}
+function updateHallazgo(i) {
+    const tr  = document.querySelector(`#hallazgosBody tr:nth-child(${i+1})`);
+    const p   = parseInt(tr?.querySelector('td:nth-child(5) input')?.value) || 0;
+    const m   = parseInt(tr?.querySelector('td:nth-child(6) input')?.value) || 0;
+    const n   = p * m;
+    const cl  = n >= 15 ? 'critico' : n >= 8 ? 'alto' : n >= 4 ? 'medio' : 'bajo';
+    const lb  = n >= 15 ? 'Crítico' : n >= 8 ? 'Alto' : n >= 4 ? 'Medio' : 'Bajo';
+    document.getElementById(`hal-nivel-${i}`).textContent = n || '—';
+    document.getElementById(`hal-clasif-${i}`).innerHTML  = n ? `<span class="badge-status badge-${cl}">${lb}</span>` : '—';
+}
+
+/* ============ INIT PLAN ============ */
+function initPlan() {
+    const tbody = document.getElementById('planBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 8; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>PA-${String(i+1).padStart(2,'0')}</td>
+            <td><input type="text" placeholder="Hallazgo" style="width:130px;"></td>
+            <td><input type="text" placeholder="Acción correctiva" style="width:190px;"></td>
+            <td><input type="text" placeholder="Responsable" style="width:120px;"></td>
+            <td><input type="date" style="width:130px;"></td>
+            <td><input type="number" min="0" max="100" value="0" style="width:65px;" onchange="updatePlan(${i})"></td>
+            <td id="plan-estado-${i}">Pendiente</td>
+            <td id="plan-dias-${i}">—</td>
+            <td id="plan-semaforo-${i}">—</td>`;
+        tbody.appendChild(tr);
+    }
+}
+function updatePlan(i) {
+    const tr     = document.querySelector(`#planBody tr:nth-child(${i+1})`);
+    const pct    = parseInt(tr?.querySelector('td:nth-child(6) input')?.value) || 0;
+    const fecha  = tr?.querySelector('td:nth-child(5) input')?.value;
+    const hoy    = new Date();
+    const dias   = fecha ? Math.ceil((new Date(fecha) - hoy) / 86400000) : null;
+    const estado = pct === 100 ? 'Completado' : pct > 0 ? 'En progreso' : 'Pendiente';
+    document.getElementById(`plan-estado-${i}`).textContent    = estado;
+    document.getElementById(`plan-dias-${i}`).textContent      = dias !== null ? (dias >= 0 ? dias : 'Vencido') : '—';
+    document.getElementById(`plan-semaforo-${i}`).textContent  =
+        pct === 100 ? '✅' : (dias !== null && dias < 0) ? '🔴' : (dias !== null && dias <= 7) ? '🟡' : (dias !== null) ? '🟢' : '—';
+}
+
+/* ============ VALIDACION Y PROGRESO ============ */
+function validateField(input) {
+    if (!input.value.trim()) { input.classList.add('invalid-input'); input.classList.remove('valid-input'); return false; }
+    input.classList.remove('invalid-input'); input.classList.add('valid-input'); return true;
+}
+
+function updateGlobalProgress() {
+    let total = 0, obt = 0;
+    // Portada
+    total += 4;
+    ['p_entidad','p_area','p_periodo','p_auditor'].forEach(id => { if (document.getElementById(id)?.value.trim()) obt++; });
+    // Factores
+    total += 11;
+    FACTORES.forEach((_, i) => { if (document.getElementById(`factor-val-${i}`)?.value) obt++; });
+    // Objetivos individuales (nivel + resultado)
+    OBJETIVOS.forEach(o => {
+        const cod = o.cod.toLowerCase();
+        total += 2;
+        if (document.getElementById(cod + '_nivel')?.value !== '') obt++;
+        if (document.getElementById(cod + '_resultado')?.value !== '') obt++;
+    });
+    const pct  = total > 0 ? Math.round(obt / total * 100) : 0;
+    document.getElementById('globalProgressFill').style.width = pct + '%';
+    document.getElementById('globalProgressPct').textContent  = pct + '%';
+    const fill = document.getElementById('globalProgressFill');
+    fill.style.background = pct === 100 ? 'var(--secondary)' : pct > 50 ? 'var(--warning)' : 'var(--danger)';
+}
+
+function validarPasoActual() {
+    const tab = document.querySelector('.tab-btn.active')?.dataset.tab;
+    let err = 0;
+    if (tab === 'portada') {
+        ['p_entidad','p_area','p_periodo','p_auditor'].forEach(id => { if (!validateField(document.getElementById(id))) err++; });
+    } else if (tab === 'factores') {
+        FACTORES.forEach((_, i) => { const s = document.getElementById(`factor-val-${i}`); if (!s.value) { s.classList.add('invalid-input'); err++; } else s.classList.remove('invalid-input'); });
+    } else if (tab === 'alcance') {
+        OBJETIVOS.forEach((_, i) => { if (document.getElementById(`alc-inc-${i}`).value === 'Sí') { const j = document.getElementById(`alc-just-${i}`); if (!j.value.trim()) { j.classList.add('invalid-input'); err++; } else j.classList.remove('invalid-input'); } });
+    } else if (tab === 'informe') {
+        ['i_opinion','i_firma'].forEach(id => { if (!validateField(document.getElementById(id))) err++; });
+    } else {
+        mostrarToast('✅ Esta pestaña no requiere validación obligatoria.', 'success'); return;
+    }
+    if (err === 0) mostrarToast('✅ Paso validado correctamente.', 'success');
+    else mostrarToast(`⚠️ Faltan ${err} campo(s) obligatorio(s). Revisa los bordes rojos.`, 'error');
+    updateGlobalProgress();
+}
+
+/* ============ EXPORTACIÓN EXCEL ============ */
+const COLORS = { titleBg:"1A5276", titleFg:"FFFFFF", headerBg:"2980B9", headerFg:"FFFFFF", bandBg:"EAF2F8", border:"B0BEC5" };
+
+function buildStyledSheet(title, headers, rows, colWidths) {
+    const aoa = [[title], [], headers, ...rows];
+    const ws  = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = colWidths.map(w => ({ wch: w }));
+    ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:headers.length-1} }];
+    ws[XLSX.utils.encode_cell({r:0,c:0})].s = { font:{bold:true,sz:13,color:{rgb:COLORS.titleFg}}, fill:{patternType:'solid',fgColor:{rgb:COLORS.titleBg}}, alignment:{horizontal:'center'} };
+    for (let C = 0; C < headers.length; C++) {
+        const a = XLSX.utils.encode_cell({r:2,c:C});
+        ws[a].s = { font:{bold:true,sz:10,color:{rgb:COLORS.headerFg}}, fill:{patternType:'solid',fgColor:{rgb:COLORS.headerBg}}, alignment:{horizontal:'center',wrapText:true} };
+    }
+    for (let R = 3; R < aoa.length; R++) {
+        for (let C = 0; C < headers.length; C++) {
+            const a = XLSX.utils.encode_cell({r:R,c:C});
+            if (!ws[a]) ws[a] = {t:'s',v:''};
+            ws[a].s = { font:{sz:10}, fill:R%2===0?{patternType:'solid',fgColor:{rgb:COLORS.bandBg}}:undefined, alignment:{vertical:'center',wrapText:true} };
+        }
+    }
+    return ws;
+}
+
+function exportarExcelLleno() {
+    try {
+        const wb = XLSX.utils.book_new();
+        // Portada
+        const portData = [['AUDITORÍA COBIT 2019'],[],['Dato','Valor'],
+            ['Entidad',document.getElementById('p_entidad').value],
+            ['Área',document.getElementById('p_area').value],
+            ['Período',document.getElementById('p_periodo').value],
+            ['Auditor líder',document.getElementById('p_auditor').value],
+            ['Equipo',document.getElementById('p_equipo').value],
+            ['Fecha inicio',document.getElementById('p_fecha_ini').value],
+            ['Fecha cierre',document.getElementById('p_fecha_fin').value],
+            ['Objetivo',document.getElementById('p_objetivo').value]
+        ];
+        const wsPort = XLSX.utils.aoa_to_sheet(portData);
+        wsPort['!cols'] = [{wch:30},{wch:70}];
+        XLSX.utils.book_append_sheet(wb, wsPort, 'Portada');
+
+        // Formularios de los 40 objetivos
+        const domHeaders = ['Código','Dominio','Objetivo','Auditor','Fecha','Nivel actual','Nivel meta','Resultado','Evidencia','Descripción','Hallazgos','Recomendación'];
+        const objRows = OBJETIVOS.map(o => {
+            const c = o.cod.toLowerCase();
+            return [
+                o.cod, o.dom, o.nom,
+                document.getElementById(c+'_auditor')?.value  || '',
+                document.getElementById(c+'_fecha')?.value    || '',
+                document.getElementById(c+'_nivel')?.value    || '',
+                document.getElementById(c+'_meta')?.value     || '',
+                document.getElementById(c+'_resultado')?.value|| '',
+                document.getElementById(c+'_evidencia')?.value|| '',
+                document.getElementById(c+'_desc')?.value     || '',
+                document.getElementById(c+'_hallazgo')?.value || '',
+                document.getElementById(c+'_recom')?.value    || ''
+            ];
+        });
+        const wsObj = buildStyledSheet('EVALUACIÓN INDIVIDUAL — 40 OBJETIVOS COBIT 2019', domHeaders, objRows, [10,8,46,20,14,14,12,14,14,30,30,30]);
+        XLSX.utils.book_append_sheet(wb, wsObj, 'Objetivos_40');
+
+        // Capacidad
+        const capHeaders = ['Código','Objetivo','Nivel actual','Nivel meta','Brecha','Estado'];
+        const capRows = OBJETIVOS.map((o,i) => [
+            o.cod, o.nom,
+            document.getElementById(`cap-nivel-${i}`)?.value  || '',
+            document.getElementById(`cap-meta-${i}`)?.textContent || '',
+            document.getElementById(`cap-brecha-${i}`)?.textContent || '',
+            document.getElementById(`cap-estado-${i}`)?.textContent?.trim() || ''
+        ]);
+        XLSX.utils.book_append_sheet(wb, buildStyledSheet('EVALUACIÓN DE CAPACIDAD', capHeaders, capRows, [10,46,14,12,10,16]), 'Capacidad');
+
+        // Hallazgos
+        const halHeaders = ['N°','Objetivo','Título','Condición','Prob.','Impacto','Riesgo','Clasificación','Responsable'];
+        const halRows = [];
+        for (let i = 0; i < 8; i++) {
+            const tr = document.querySelector(`#hallazgosBody tr:nth-child(${i+1})`);
+            halRows.push([i+1,
+                tr?.querySelector('td:nth-child(2) input')?.value||'',
+                tr?.querySelector('td:nth-child(3) input')?.value||'',
+                tr?.querySelector('td:nth-child(4) input')?.value||'',
+                tr?.querySelector('td:nth-child(5) input')?.value||'',
+                tr?.querySelector('td:nth-child(6) input')?.value||'',
+                tr?.querySelector('td:nth-child(7)')?.textContent||'',
+                tr?.querySelector('td:nth-child(8)')?.textContent||'',
+                tr?.querySelector('td:nth-child(9) input')?.value||''
+            ]);
+        }
+        XLSX.utils.book_append_sheet(wb, buildStyledSheet('MATRIZ DE HALLAZGOS', halHeaders, halRows, [5,12,28,40,8,8,10,14,20]), 'Hallazgos');
+
+        // Resumen
+        const resHeaders = ['Dominio','Objetivos','En alcance','Nivel actual','Nivel meta','Brecha','Cumplimiento'];
+        const resRows = [];
+        document.querySelectorAll('#resumenBody tr').forEach(tr => {
+            const cells = tr.querySelectorAll('td');
+            resRows.push([...cells].map(td => td.textContent.trim()));
+        });
+        XLSX.utils.book_append_sheet(wb, buildStyledSheet('RESUMEN EJECUTIVO', resHeaders, resRows, [14,12,12,14,12,10,14]), 'Resumen');
+
+        XLSX.writeFile(wb, 'Auditoria_COBIT2019_Completa_40obj.xlsx', { cellStyles: true });
+        mostrarToast('✅ Excel exportado con 40 objetivos.', 'success');
+    } catch(e) { mostrarToast('❌ Error: ' + e.message, 'error'); }
+}
+
+function exportarExcelVacio() {
+    try {
+        const wb = XLSX.utils.book_new();
+        const headers = ['Código','Dominio','Objetivo','Auditor','Fecha','Nivel actual (0-5)','Nivel meta','Resultado','Evidencia','Descripción','Hallazgos','Recomendación'];
+        const rows = OBJETIVOS.map(o => [o.cod, o.dom, o.nom, '', '', '', '', '', '', '', '', '']);
+        XLSX.utils.book_append_sheet(wb, buildStyledSheet('PLANTILLA — 40 OBJETIVOS COBIT 2019', headers, rows, [10,8,46,20,14,14,12,14,14,30,30,30]), 'Objetivos_40');
+        XLSX.writeFile(wb, 'Plantilla_Vacia_COBIT2019_40obj.xlsx', { cellStyles: true });
+        mostrarToast('✅ Plantilla vacía descargada.', 'success');
+    } catch(e) { mostrarToast('❌ Error: ' + e.message, 'error'); }
+}
+
+/* ============ UTILIDADES ============ */
+function mostrarToast(msg, tipo = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast show ' + tipo;
+    setTimeout(() => { t.className = 'toast ' + tipo; }, 4000);
+}
+
+/* ============ ARRANQUE ============ */
+document.addEventListener('DOMContentLoaded', () => {
+    initEscalas();
+    initFactores();
+    initAlcance();
+    initCapacidad();
+    initRiesgos();
+    initEvidencias();
+    initPrograma();
+    initMuestreo();
+    initHallazgos();
+    initPlan();
+    updateGlobalProgress();
+    updateResumen();
+
+    // Tabs
+    document.getElementById('tabsNav').addEventListener('click', e => {
+        const btn = e.target.closest('.tab-btn');
+        if (!btn) return;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = document.getElementById('tab-' + btn.dataset.tab);
+        if (tab) tab.classList.add('active');
+        if (btn.dataset.tab === 'resumen') updateResumen();
+    });
+});
+</script>
+</body>
+</html>
