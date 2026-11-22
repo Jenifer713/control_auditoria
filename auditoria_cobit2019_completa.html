@@ -1,0 +1,1966 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría COBIT 2019 - Papeles de Trabajo</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --primary-light: #2980b9;
+            --secondary: #27ae60;
+            --accent: #e67e22;
+            --danger: #c0392b;
+            --warning: #f39c12;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --border: #dce1e8;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --radius: 10px;
+            --transition: all 0.25s ease;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.5; padding: 16px; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white; padding: 24px 28px; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 12px;
+            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;
+        }
+        header h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; }
+        header p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            border: none; border-radius: 8px; padding: 10px 18px; font-size: 0.88rem;
+            font-weight: 600; cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-primary:hover { background: #eaf2f8; transform: translateY(-1px); }
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-success:hover { background: #219a52; transform: translateY(-1px); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: #d35400; transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 2px solid white; color: white; }
+        .btn-outline:hover { background: rgba(255,255,255,0.15); }
+
+        .progress-container {
+            background: var(--card-bg); padding: 12px 20px; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+            border-left: 4px solid var(--secondary);
+        }
+        .progress-text { font-size: 0.85rem; font-weight: 600; color: var(--text-light); white-space: nowrap; }
+        .progress-track { flex-grow: 1; height: 10px; background: #eaecee; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--danger); width: 0%; transition: width 0.4s ease; border-radius: 5px; }
+        .progress-pct { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+
+        .tabs-nav {
+            display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px;
+            background: var(--card-bg); padding: 8px; border-radius: var(--radius);
+            box-shadow: var(--shadow); overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 9px 14px; border: 1px solid transparent; background: transparent;
+            border-radius: 7px; font-size: 0.82rem; font-weight: 500;
+            color: var(--text-light); cursor: pointer; transition: var(--transition); white-space: nowrap;
+        }
+        .tab-btn:hover { background: #eef2f7; color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; font-weight: 600; }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow);
+            padding: 20px 24px; margin-bottom: 16px; border: 1px solid var(--border);
+        }
+        .card h2 { font-size: 1.15rem; font-weight: 600; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .card h2 .step { background: var(--primary); color: white; width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+        .card .subtitle { font-size: 0.85rem; color: var(--text-light); margin-bottom: 14px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 3px; }
+        .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.03em; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px;
+            font-size: 0.88rem; transition: var(--transition); background: #fafbfc; color: var(--text);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(41,128,185,0.12); background: white;
+        }
+        .invalid-input { border-color: var(--danger) !important; background: #fadbd8 !important; }
+        .valid-input { border-color: var(--secondary) !important; background: #eafaf1 !important; }
+
+        .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 700px; }
+        thead { background: #eef2f7; position: sticky; top: 0; z-index: 2; }
+        th { padding: 10px 10px; text-align: left; font-weight: 600; color: var(--primary); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid var(--border); white-space: nowrap; }
+        td { padding: 8px 10px; border-bottom: 1px solid #edf1f5; vertical-align: middle; }
+        tbody tr:hover { background: #f8fafc; }
+        tbody tr:last-child td { border-bottom: none; }
+
+        td input, td select, td textarea { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 5px; font-size: 0.8rem; background: #fafbfc; transition: var(--transition); }
+        td input:focus, td select:focus, td textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 2px rgba(41,128,185,0.12); background: white; }
+        td input.input-error { border-color: var(--danger) !important; background: #fadbd8 !important; }
+
+        .badge-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+        .badge-critico { background: #fadbd8; color: var(--danger); }
+        .badge-alto { background: #fdebd0; color: #b9770e; }
+        .badge-medio { background: #fef9e7; color: #9a7d0a; }
+        .badge-bajo { background: #eafaf1; color: var(--secondary); }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 10px; }
+        .kpi { background: #f8fafc; border-radius: 8px; padding: 14px 16px; border-left: 4px solid var(--primary-light); transition: var(--transition); }
+        .kpi:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .kpi .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-light); font-weight: 600; }
+        .kpi .value { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-top: 2px; }
+        .kpi .value.danger { color: var(--danger); }
+        .kpi .value.success { color: var(--secondary); }
+        .kpi .value.warning { color: var(--warning); }
+        .kpi .sub { font-size: 0.72rem; color: var(--text-light); }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white;
+            padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2); transform: translateY(100px);
+            opacity: 0; transition: all 0.35s ease; z-index: 9999; max-width: 320px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--secondary); }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
+
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            header { padding: 16px; flex-direction: column; align-items: flex-start; }
+            header h1 { font-size: 1.2rem; }
+            .card { padding: 14px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .tab-btn { font-size: 0.75rem; padding: 7px 10px; }
+            .progress-container { flex-direction: column; align-items: flex-start; }
+        }
+    
+        /* ===== FORMULARIOS COBIT ===== */
+        .dom-nav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+        .dom-btn { padding:7px 14px; border:2px solid var(--border); border-radius:7px; font-size:0.82rem; font-weight:600; cursor:pointer; background:white; transition:var(--transition); }
+        .dom-btn.active, .dom-btn:hover { background:var(--primary); color:white; border-color:var(--primary); }
+        .dom-EDM { border-left:5px solid #8e44ad; }
+        .dom-APO { border-left:5px solid #2980b9; }
+        .dom-BAI { border-left:5px solid #27ae60; }
+        .dom-DSS { border-left:5px solid #e67e22; }
+        .dom-MEA { border-left:5px solid #c0392b; }
+        .obj-card { background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:14px; border:1px solid var(--border); overflow:hidden; }
+        .obj-card-header { padding:12px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; user-select:none; }
+        .obj-card-header:hover { background:#f8fafc; }
+        .obj-code { font-size:0.9rem; font-weight:700; padding:4px 10px; border-radius:6px; color:white; }
+        .code-EDM { background:#8e44ad; }
+        .code-APO { background:#2980b9; }
+        .code-BAI { background:#27ae60; }
+        .code-DSS { background:#e67e22; }
+        .code-MEA { background:#c0392b; }
+        .obj-title { font-size:0.92rem; font-weight:600; color:var(--text); flex:1; }
+        .obj-badge { font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:12px; white-space:nowrap; }
+        .obj-badge-nd { background:#eaecee; color:#7f8c8d; }
+        .obj-badge-ok { background:#eafaf1; color:#27ae60; }
+        .obj-badge-warn { background:#fef9e7; color:#9a7d0a; }
+        .obj-badge-bad { background:#fadbd8; color:#c0392b; }
+        .obj-card-body { padding:0 18px 16px; display:none; border-top:1px solid var(--border); }
+        .obj-card-body.open { display:block; }
+        .obj-footer { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; align-items:flex-start; }
+        .obj-footer .form-group { flex:1; min-width:200px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>📋 Auditoría de Gobierno y Gestión de I&T — COBIT 2019</h1>
+        <p>Libro de papeles de trabajo · Complete los formularios y exporte a Excel</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-outline" onclick="exportarExcelVacio()">📄 Descargar Plantilla Vacía</button>
+        <button class="btn btn-primary" onclick="validarPasoActual()">✔ Validar este paso</button>
+        <button class="btn btn-success" onclick="exportarExcelLleno()">⬇ Exportar Datos Llenos</button>
+        <button class="btn btn-accent" onclick="exportarCSV()">📄 Exportar CSV</button>
+    </div>
+</header>
+
+<div class="progress-container">
+    <div class="progress-text">Progreso de la Auditoría:</div>
+    <div class="progress-track">
+        <div class="progress-fill" id="globalProgressFill"></div>
+    </div>
+    <div class="progress-pct" id="globalProgressPct">0%</div>
+</div>
+
+<nav class="tabs-nav" id="tabsNav">
+    <button class="tab-btn active" data-tab="portada">📄 Portada</button>
+    <button class="tab-btn" data-tab="contexto">🏢 Contexto</button>
+    <button class="tab-btn" data-tab="escalas">📊 Escalas</button>
+    <button class="tab-btn" data-tab="factores">⚙️ Factores Diseño</button>
+    <button class="tab-btn" data-tab="alcance">🎯 Alcance</button>
+    <button class="tab-btn" data-tab="riesgos">⚠️ Riesgos Auditoría</button>
+    <button class="tab-btn" data-tab="evidencias">📥 Evidencias</button>
+    <button class="tab-btn" data-tab="programa">📋 Programa</button>
+    <button class="tab-btn" data-tab="muestreo">🔬 Muestreo</button>
+    <button class="tab-btn" data-tab="capacidad">📈 Capacidad</button>
+    <button class="tab-btn" data-tab="hallazgos">🔍 Hallazgos</button>
+    <button class="tab-btn" data-tab="plan">✅ Plan Acción</button>
+    <button class="tab-btn" data-tab="resumen">📊 Resumen</button>
+    <button class="tab-btn" data-tab="formularios">&#128194; Formularios COBIT</button>
+    <button class="tab-btn" data-tab="informe">📝 Informe</button>
+</nav>
+
+<!-- ================= PORTADA ================= -->
+<div class="tab-content active" id="tab-portada">
+    <div class="card">
+        <h2><span class="step">1</span> Datos de la Auditoría</h2>
+        <p class="subtitle">Complete la información general. Los campos con <b>*</b> son obligatorios.</p>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Entidad auditada *</label>
+                <input type="text" id="p_entidad" placeholder="Ej.: Empresa Ejemplo S.A." oninput="validateField(this,'p_entidad')">
+            </div>
+            <div class="form-group">
+                <label>Unidad / área auditada *</label>
+                <input type="text" id="p_area" placeholder="Ej.: Gerencia de Tecnología" oninput="validateField(this,'p_area')">
+            </div>
+            <div class="form-group">
+                <label>Período evaluado *</label>
+                <input type="text" id="p_periodo" placeholder="Ej.: 01/01/2026 - 30/09/2026" oninput="validateField(this,'p_periodo')">
+            </div>
+            <div class="form-group">
+                <label>Auditor líder *</label>
+                <input type="text" id="p_auditor" placeholder="Ej.: Nombre Apellido" oninput="validateField(this,'p_auditor')">
+            </div>
+            <div class="form-group">
+                <label>Equipo auditor</label>
+                <input type="text" id="p_equipo" placeholder="Ej.: Auditor 1, Auditor 2" oninput="updateGlobalProgress()">
+            </div>
+            <div class="form-group">
+                <label>Fecha de inicio</label>
+                <input type="date" id="p_fecha_ini" onchange="updateGlobalProgress()">
+            </div>
+            <div class="form-group">
+                <label>Fecha de cierre</label>
+                <input type="date" id="p_fecha_fin" onchange="updateGlobalProgress()">
+            </div>
+            <div class="form-group">
+                <label>Versión del papel de trabajo</label>
+                <input type="text" id="p_version" value="2.0" readonly style="background:#eef2f7;">
+            </div>
+            <div class="form-group">
+                <label>Referencia normativa</label>
+                <input type="text" id="p_normativa" value="COBIT 2019 (ISACA) - Marco de gobierno y gestión de I&T" readonly style="background:#eef2f7;">
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label>Objetivo de la auditoría</label>
+                <textarea id="p_objetivo" rows="2" oninput="updateGlobalProgress()">Evaluar el nivel de capacidad de los procesos de I&T y el cumplimiento de las prácticas de gestión frente a COBIT 2019.</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= CONTEXTO ================= -->
+<div class="tab-content" id="tab-contexto">
+    <div class="card">
+        <h2><span class="step">2</span> Contexto de la Entidad</h2>
+        <p class="subtitle">Entendimiento del negocio y de I&T antes de aplicar los factores de diseño.</p>
+        <div class="form-grid">
+            <div class="form-group"><label>Misión / visión del negocio</label><textarea id="c_mision" rows="2" placeholder="Describa la misión y visión..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Estrategia del negocio</label><textarea id="c_estrategia" rows="2" placeholder="Crecimiento, innovación, servicio al cliente, costo..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Estructura organizacional (TI)</label><textarea id="c_estructura" rows="2" placeholder="Organigrama, dependencias, comités..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Principales procesos de negocio</label><textarea id="c_procesos" rows="2" placeholder="Procesos core y sistemas que los soportan..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Marco regulatorio aplicable</label><textarea id="c_regulatorio" rows="2" placeholder="Leyes, normas sectoriales, protección de datos..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group"><label>Historial de auditorías previas</label><textarea id="c_historial" rows="2" placeholder="Hallazgos abiertos, auditorías anteriores..." oninput="updateGlobalProgress()"></textarea></div>
+            <div class="form-group">
+                <label>Madurez percibida de I&T</label>
+                <select id="c_madurez" onchange="updateGlobalProgress()">
+                    <option value="">Seleccione...</option>
+                    <option value="Baja">Baja</option>
+                    <option value="Media">Media</option>
+                    <option value="Alta">Alta</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= ESCALAS (EDITABLE) ================= -->
+<div class="tab-content" id="tab-escalas">
+    <div class="card">
+        <h2><span class="step">3</span> Escalas de Referencia</h2>
+        <p class="subtitle">Modelo de capacidad de procesos COBIT 2019. <b>Editable</b>: puede adaptar nombres y descripciones al contexto de la entidad.</p>
+        <div class="table-wrapper">
+            <table id="tablaEscalas">
+                <thead><tr><th>Nivel</th><th>Nombre</th><th>Descripción</th></tr></thead>
+                <tbody id="escalasBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= FACTORES ================= -->
+<div class="tab-content" id="tab-factores">
+    <div class="card">
+        <h2><span class="step">4</span> Factores de Diseño COBIT 2019</h2>
+        <p class="subtitle">Valore cada factor (Bajo/Medio/Alto). El borde rojo indica que falta la valoración.</p>
+        <div class="table-wrapper">
+            <table id="tablaFactores">
+                <thead><tr><th>N°</th><th>Factor de diseño</th><th>Qué evaluar</th><th>Valoración *</th><th>Valor</th><th>Peso (1-5)</th><th>Puntaje</th><th>Observaciones</th></tr></thead>
+                <tbody id="factoresBody"></tbody>
+            </table>
+        </div>
+        <div class="kpi-grid" style="margin-top:16px;">
+            <div class="kpi"><div class="label">Índice de exigencia</div><div class="value" id="kpiExigencia">—</div><div class="sub" id="kpiExigenciaLectura">Valore los factores</div></div>
+            <div class="kpi"><div class="label">Factores valorados</div><div class="value" id="kpiFactoresVal">0 / 11</div><div class="sub">Complete todos los factores</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= ALCANCE ================= -->
+<div class="tab-content" id="tab-alcance">
+    <div class="card">
+        <h2><span class="step">5</span> Alcance: Objetivos COBIT 2019</h2>
+        <p class="subtitle">Defina prioridad, inclusión y justificación. Las filas sin justificación se marcan en rojo.</p>
+        <div class="table-wrapper">
+            <table id="tablaAlcance">
+                <thead><tr><th>Código</th><th>Dominio</th><th>Objetivo</th><th>Prioridad</th><th>En alcance</th><th>Nivel meta</th><th>Justificación *</th></tr></thead>
+                <tbody id="alcanceBody"></tbody>
+            </table>
+        </div>
+        <div class="kpi-grid" style="margin-top:14px;">
+            <div class="kpi"><div class="label">Objetivos en alcance</div><div class="value" id="kpiAlcanceCount">0</div><div class="sub">de 40 objetivos</div></div>
+            <div class="kpi"><div class="label">Sin justificación</div><div class="value danger" id="kpiSinJust">0</div><div class="sub">Complete antes de continuar</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= RIESGOS ================= -->
+<div class="tab-content" id="tab-riesgos">
+    <div class="card">
+        <h2><span class="step">6</span> Riesgos de la Auditoría</h2>
+        <p class="subtitle">Riesgos propios del trabajo de auditoría. Documente y mitigue.</p>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>N°</th><th>Riesgo</th><th>Descripción</th><th>Prob. (1-5)</th><th>Impacto (1-5)</th><th>Riesgo</th><th>Estrategia</th></tr></thead>
+                <tbody id="riesgosBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= EVIDENCIAS ================= -->
+<div class="tab-content" id="tab-evidencias">
+    <div class="card">
+        <h2><span class="step">7</span> Solicitud de Evidencias (PBC)</h2>
+        <p class="subtitle">Registro de lo solicitado al auditado y su estado de recepción.</p>
+        <div class="table-wrapper">
+            <table id="tablaEvidencias">
+                <thead><tr><th>N°</th><th>Objetivo</th><th>Documento solicitado</th><th>Área responsable</th><th>Fecha solicitud</th><th>Fecha compromiso</th><th>Fecha recepción</th><th>Estado</th><th>Obs.</th></tr></thead>
+                <tbody id="evidenciasBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= PROGRAMA ================= -->
+<div class="tab-content" id="tab-programa">
+    <div class="card">
+        <h2><span class="step">8</span> Programa de Auditoría</h2>
+        <p class="subtitle">Un procedimiento por objetivo en alcance. Registre el resultado.</p>
+        <div class="table-wrapper">
+            <table id="tablaPrograma">
+                <thead><tr><th>Código</th><th>Objetivo</th><th>En alcance</th><th>Procedimiento de auditoría</th><th>Resultado *</th><th>Puntaje</th><th>Tipo prueba</th><th>Ref. Evidencia</th></tr></thead>
+                <tbody id="programaBody"></tbody>
+            </table>
+        </div>
+        <div class="kpi-grid" style="margin-top:14px;">
+            <div class="kpi"><div class="label">Cumplimiento promedio</div><div class="value" id="kpiProgProm">—</div><div class="sub">de procedimientos</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MUESTREO ================= -->
+<div class="tab-content" id="tab-muestreo">
+    <div class="card">
+        <h2><span class="step">9</span> Muestreo y Pruebas</h2>
+        <p class="subtitle">Defina población y muestra para sustentar el puntaje 100/50/0.</p>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>N°</th><th>Objetivo</th><th>Población</th><th>Muestra</th><th>Método</th><th>Criterio</th><th>Resultado</th></tr></thead>
+                <tbody id="muestreoBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= CAPACIDAD ================= -->
+<div class="tab-content" id="tab-capacidad">
+    <div class="card">
+        <h2><span class="step">10</span> Evaluación de Capacidad</h2>
+        <p class="subtitle">Nivel actual (0-5). El borde rojo indica que falta evaluar el nivel.</p>
+        <div class="table-wrapper">
+            <table id="tablaCapacidad">
+                <thead><tr><th>Código</th><th>Objetivo</th><th>En alcance</th><th>Nivel actual *</th><th>Nivel meta</th><th>Brecha</th><th>Estado</th><th>Nivel (nombre)</th></tr></thead>
+                <tbody id="capacidadBody"></tbody>
+            </table>
+        </div>
+        <div class="kpi-grid" style="margin-top:14px;">
+            <div class="kpi"><div class="label">Nivel actual promedio</div><div class="value" id="kpiCapProm">—</div><div class="sub">en objetivos en alcance</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= HALLAZGOS ================= -->
+<div class="tab-content" id="tab-hallazgos">
+    <div class="card">
+        <h2><span class="step">11</span> Matriz de Hallazgos</h2>
+        <p class="subtitle">Riesgo = probabilidad × impacto. Complete los datos críticos.</p>
+        <div class="table-wrapper">
+            <table id="tablaHallazgos">
+                <thead><tr><th>N°</th><th>Objetivo</th><th>Título</th><th>Condición</th><th>Prob. *</th><th>Impacto *</th><th>Riesgo</th><th>Clasificación</th><th>Responsable</th></tr></thead>
+                <tbody id="hallazgosBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= PLAN ACCIÓN ================= -->
+<div class="tab-content" id="tab-plan">
+    <div class="card">
+        <h2><span class="step">12</span> Plan de Acción</h2>
+        <p class="subtitle">Seguimiento con semáforo automático.</p>
+        <div class="table-wrapper">
+            <table id="tablaPlan">
+                <thead><tr><th>N° acción</th><th>Hallazgo</th><th>Acción correctiva</th><th>Responsable</th><th>Fecha fin</th><th>% avance</th><th>Estado</th><th>Días rest.</th><th>Semáforo</th></tr></thead>
+                <tbody id="planBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= RESUMEN ================= -->
+<div class="tab-content" id="tab-resumen">
+    <div class="card">
+        <h2><span class="step">13</span> Resumen Ejecutivo</h2>
+        <p class="subtitle">Panel calculado automáticamente.</p>
+        <div class="table-wrapper">
+            <table>
+                <thead><tr><th>Dominio</th><th>Objetivos</th><th>Nivel actual</th><th>Nivel meta</th><th>Brecha</th><th>Cumplimiento</th></tr></thead>
+                <tbody id="resumenBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= INFORME ================= -->
+<div class="tab-content" id="tab-informe">
+    <div class="card">
+        <h2><span class="step">14</span> Informe y Dictamen</h2>
+        <p class="subtitle">Conclusiones formales y firmas.</p>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Opinión del auditor *</label>
+                <select id="i_opinion" onchange="validateField(this,'i_opinion')">
+                    <option value="">Seleccione...</option>
+                    <option value="Satisfactorio">Satisfactorio</option>
+                    <option value="Con observaciones">Con observaciones</option>
+                    <option value="Insatisfactorio">Insatisfactorio</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Firma del auditor líder *</label>
+                <input type="text" id="i_firma" placeholder="Nombre y firma" oninput="validateField(this,'i_firma')">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ================= FORMULARIOS COBIT ================= -->
+<div class="tab-content" id="tab-formularios">
+    <div class="card">
+        <h2><span class="step">F</span> Formularios de Evaluaci&#243;n por Objetivo COBIT 2019</h2>
+        <p class="subtitle">Eval&#250;e cada pr&#225;ctica. El badge de cada objetivo muestra el nivel de cumplimiento calculado autom&#225;ticamente.</p>
+        <div class="dom-nav">
+            <button class="dom-btn active" onclick="filtrarDominio('TODOS', this)">&#127760; Todos (40)</button>
+            <button class="dom-btn" onclick="filtrarDominio('EDM', this)">&#127963; EDM (5)</button>
+            <button class="dom-btn" onclick="filtrarDominio('APO', this)">&#9881;&#65039; APO (14)</button>
+            <button class="dom-btn" onclick="filtrarDominio('BAI', this)">&#128296; BAI (11)</button>
+            <button class="dom-btn" onclick="filtrarDominio('DSS', this)">&#128295; DSS (6)</button>
+            <button class="dom-btn" onclick="filtrarDominio('MEA', this)">&#128202; MEA (4)</button>
+        </div>
+        <div id="objCardsContainer"></div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   DATOS BASE
+   ============================================================ */
+const ESCALAS_DEFAULT = [
+    { nivel: 0, nombre: 'Incompleto', desc: 'El proceso no se implementa o no logra su propósito.' },
+    { nivel: 1, nombre: 'Realizado', desc: 'Logra su propósito de forma informal y no planificada.' },
+    { nivel: 2, nombre: 'Gestionado', desc: 'Planificado, monitoreado y ajustado; productos controlados.' },
+    { nivel: 3, nombre: 'Definido', desc: 'Proceso estándar definido y documentado en toda la organización.' },
+    { nivel: 4, nombre: 'Medible', desc: 'Opera dentro de límites definidos y se mide cuantitativamente.' },
+    { nivel: 5, nombre: 'Optimizado', desc: 'Mejora continua para responder a cambios y metas empresariales.' }
+];
+
+const FACTORES = [
+    { n:1, nombre:"Estrategia empresarial", evaluar:"Estrategia dominante: crecimiento, innovación, servicio al cliente o costo." },
+    { n:2, nombre:"Metas empresariales", evaluar:"Metas de la empresa y su dependencia de las capacidades de TI." },
+    { n:3, nombre:"Perfil de riesgo", evaluar:"Escenarios de riesgo de I&T y apetito de riesgo." },
+    { n:4, nombre:"Problemas relacionados con TI", evaluar:"Incidentes recurrentes, sobrecostos, retrasos, fallas de seguridad." },
+    { n:5, nombre:"Panorama de amenazas", evaluar:"Entorno de amenazas externas: ciberataques, fraude, espionaje." },
+    { n:6, nombre:"Requisitos de cumplimiento", evaluar:"Regulación aplicable: supervisores, protección de datos, normas sectoriales." },
+    { n:7, nombre:"Rol de TI", evaluar:"Rol de TI: soporte, factoría, giro o estratégico." },
+    { n:8, nombre:"Modelo de abastecimiento de TI", evaluar:"Servicios internos, tercerizados, en la nube o híbridos." },
+    { n:9, nombre:"Métodos de implementación de TI", evaluar:"Enfoque de desarrollo y entrega: tradicional, ágil, DevOps." },
+    { n:10, nombre:"Estrategia de adopción de tecnología", evaluar:"Seguidor, adoptante temprano o pionero en tecnología." },
+    { n:11, nombre:"Tamaño de la empresa", evaluar:"Tamaño y complejidad de la organización." }
+];
+
+const OBJETIVOS = [
+    { cod:"EDM01", dom:"EDM", nom:"Asegurar el establecimiento y mantenimiento del marco de gobierno" },
+    { cod:"EDM02", dom:"EDM", nom:"Asegurar la entrega de beneficios" },
+    { cod:"EDM03", dom:"EDM", nom:"Asegurar la optimización del riesgo" },
+    { cod:"EDM04", dom:"EDM", nom:"Asegurar la optimización de recursos" },
+    { cod:"EDM05", dom:"EDM", nom:"Asegurar el involucramiento de las partes interesadas" },
+    { cod:"APO01", dom:"APO", nom:"Gestionar el marco de gestión de I&T" },
+    { cod:"APO02", dom:"APO", nom:"Gestionar la estrategia" },
+    { cod:"APO03", dom:"APO", nom:"Gestionar la arquitectura empresarial" },
+    { cod:"APO04", dom:"APO", nom:"Gestionar la innovación" },
+    { cod:"APO05", dom:"APO", nom:"Gestionar el portafolio" },
+    { cod:"APO06", dom:"APO", nom:"Gestionar el presupuesto y los costos" },
+    { cod:"APO07", dom:"APO", nom:"Gestionar los recursos humanos" },
+    { cod:"APO08", dom:"APO", nom:"Gestionar las relaciones" },
+    { cod:"APO09", dom:"APO", nom:"Gestionar los acuerdos de servicio" },
+    { cod:"APO10", dom:"APO", nom:"Gestionar los proveedores" },
+    { cod:"APO11", dom:"APO", nom:"Gestionar la calidad" },
+    { cod:"APO12", dom:"APO", nom:"Gestionar el riesgo" },
+    { cod:"APO13", dom:"APO", nom:"Gestionar la seguridad" },
+    { cod:"APO14", dom:"APO", nom:"Gestionar los datos" },
+    { cod:"BAI01", dom:"BAI", nom:"Gestionar programas" },
+    { cod:"BAI02", dom:"BAI", nom:"Gestionar la definición de requisitos" },
+    { cod:"BAI03", dom:"BAI", nom:"Gestionar la identificación y construcción de soluciones" },
+    { cod:"BAI04", dom:"BAI", nom:"Gestionar la disponibilidad y capacidad" },
+    { cod:"BAI05", dom:"BAI", nom:"Gestionar el cambio organizacional" },
+    { cod:"BAI06", dom:"BAI", nom:"Gestionar los cambios de TI" },
+    { cod:"BAI07", dom:"BAI", nom:"Gestionar la aceptación y transición de cambios de TI" },
+    { cod:"BAI08", dom:"BAI", nom:"Gestionar el conocimiento" },
+    { cod:"BAI09", dom:"BAI", nom:"Gestionar los activos" },
+    { cod:"BAI10", dom:"BAI", nom:"Gestionar la configuración" },
+    { cod:"BAI11", dom:"BAI", nom:"Gestionar proyectos" },
+    { cod:"DSS01", dom:"DSS", nom:"Gestionar las operaciones" },
+    { cod:"DSS02", dom:"DSS", nom:"Gestionar las solicitudes e incidentes de servicio" },
+    { cod:"DSS03", dom:"DSS", nom:"Gestionar los problemas" },
+    { cod:"DSS04", dom:"DSS", nom:"Gestionar la continuidad" },
+    { cod:"DSS05", dom:"DSS", nom:"Gestionar los servicios de seguridad" },
+    { cod:"DSS06", dom:"DSS", nom:"Gestionar los controles de los procesos de negocio" },
+    { cod:"MEA01", dom:"MEA", nom:"Gestionar el monitoreo del desempeño y la conformidad" },
+    { cod:"MEA02", dom:"MEA", nom:"Gestionar el sistema de control interno" },
+    { cod:"MEA03", dom:"MEA", nom:"Gestionar el cumplimiento de requisitos externos" },
+    { cod:"MEA04", dom:"MEA", nom:"Gestionar el aseguramiento" }
+];
+
+const RIESGOS = [
+    { n:1, riesgo:"Limitación de acceso a información", desc:"El auditado no proporciona información completa o a tiempo.", prob:3, impact:4, estrategia:"Solicitar por escrito con plazos y escalar a nivel gerencial." },
+    { n:2, riesgo:"Calidad de la evidencia", desc:"Documentos incompletos, sin firmas o inconsistentes.", prob:4, impact:3, estrategia:"Verificar integridad y solicitar fuentes primarias." },
+    { n:3, riesgo:"Alcance insuficiente", desc:"Exclusión de procesos críticos por presión de tiempo o política.", prob:2, impact:5, estrategia:"Documentar justificación y comunicar riesgos al comité." },
+    { n:4, riesgo:"Conflictos de interés", desc:"Personal auditado con relación directa al auditor.", prob:2, impact:4, estrategia:"Declaración de independencia y rotación de auditores." },
+    { n:5, riesgo:"Sesgo del auditor", desc:"Conclusiones influenciadas por experiencias previas.", prob:2, impact:3, estrategia:"Revisión por pares y supervisión del líder." }
+];
+
+const EVIDENCIAS = [
+    { n:1, obj:"EDM01", doc:"Política de gobierno de TI", area:"Gerencia General", fsol:"2026-01-10", fcomp:"2026-01-17", frec:"", estado:"Pendiente", obs:"" },
+    { n:2, obj:"APO01", doc:"Manual de procesos de TI", area:"Gerencia de TI", fsol:"2026-01-10", fcomp:"2026-01-20", frec:"", estado:"Pendiente", obs:"" },
+    { n:3, obj:"DSS02", doc:"Reporte de incidentes 2025", area:"Mesa de Ayuda", fsol:"2026-01-12", fcomp:"2026-01-19", frec:"", estado:"Pendiente", obs:"" }
+];
+
+/* ============================================================
+   INICIALIZACIÓN DE TABLAS
+   ============================================================ */
+function initEscalas() {
+    const tbody = document.getElementById('escalasBody');
+    tbody.innerHTML = '';
+    ESCALAS_DEFAULT.forEach((e, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${e.nivel}</strong></td>
+            <td><input type="text" id="esc-nom-${i}" value="${e.nombre}" style="width:160px;" oninput="updateGlobalProgress()"></td>
+            <td><textarea id="esc-desc-${i}" rows="2" style="width:100%; min-width:320px;" oninput="updateGlobalProgress()">${e.desc}</textarea></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function initFactores() {
+    const tbody = document.getElementById('factoresBody');
+    tbody.innerHTML = '';
+    FACTORES.forEach((f, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${f.n}</td>
+            <td><strong>${f.nombre}</strong></td>
+            <td><small>${f.evaluar}</small></td>
+            <td>
+                <select id="factor-val-${i}" onchange="updateFactor(${i})" style="width:100px;">
+                    <option value="">—</option>
+                    <option value="Bajo">Bajo</option>
+                    <option value="Medio">Medio</option>
+                    <option value="Alto">Alto</option>
+                </select>
+            </td>
+            <td id="fval-${i}">—</td>
+            <td><input type="number" min="1" max="5" value="3" onchange="updateFactor(${i})" style="width:60px;"></td>
+            <td id="fpun-${i}">—</td>
+            <td><input type="text" placeholder="Obs..." style="width:120px;"></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateFactor(i) {
+    const sel = document.getElementById(`factor-val-${i}`);
+    const val = sel.value;
+    const valorNum = val === 'Bajo' ? 1 : val === 'Medio' ? 2 : val === 'Alto' ? 3 : '';
+    const peso = parseInt(sel.closest('tr').querySelector('input[type="number"]').value) || 0;
+    document.getElementById(`fval-${i}`).textContent = valorNum || '—';
+    document.getElementById(`fpun-${i}`).textContent = valorNum ? (valorNum * peso) : '—';
+    if (val) { sel.classList.remove('invalid-input'); sel.classList.add('valid-input'); }
+    else { sel.classList.add('invalid-input'); sel.classList.remove('valid-input'); }
+    calcularExigencia();
+    updateGlobalProgress();
+}
+
+function calcularExigencia() {
+    let sumaPuntajes = 0, sumaPesos = 0, valorados = 0;
+    FACTORES.forEach((_, i) => {
+        const val = document.getElementById(`factor-val-${i}`).value;
+        if (val) {
+            valorados++;
+            const valorNum = val === 'Bajo' ? 1 : val === 'Medio' ? 2 : 3;
+            const peso = parseInt(document.getElementById(`factor-val-${i}`).closest('tr').querySelector('input[type="number"]').value) || 0;
+            sumaPuntajes += valorNum * peso;
+            sumaPesos += peso;
+        }
+    });
+    const idx = sumaPesos > 0 ? (sumaPuntajes / (3 * sumaPesos)) : '';
+    const kpi = document.getElementById('kpiExigencia');
+    const lect = document.getElementById('kpiExigenciaLectura');
+    document.getElementById('kpiFactoresVal').textContent = `${valorados} / 11`;
+    if (idx === '' || isNaN(idx)) {
+        kpi.textContent = '—'; kpi.className = 'value'; lect.textContent = 'Valore los factores';
+    } else {
+        kpi.textContent = idx.toFixed(2);
+        if (idx >= 0.67) { kpi.className = 'value danger'; lect.textContent = 'Exigencia ALTA → meta 4'; }
+        else if (idx >= 0.34) { kpi.className = 'value warning'; lect.textContent = 'Exigencia MEDIA → meta 3'; }
+        else { kpi.className = 'value success'; lect.textContent = 'Exigencia BAJA → meta 2'; }
+    }
+}
+
+function initAlcance() {
+    const tbody = document.getElementById('alcanceBody');
+    tbody.innerHTML = '';
+    OBJETIVOS.forEach((o, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${o.cod}</strong></td>
+            <td><small>${o.dom}</small></td>
+            <td><small>${o.nom}</small></td>
+            <td>
+                <select id="alc-prio-${i}" onchange="updateAlcance(${i})" style="width:80px;">
+                    <option value="Baja">Baja</option>
+                    <option value="Media" selected>Media</option>
+                    <option value="Alta">Alta</option>
+                </select>
+            </td>
+            <td>
+                <select id="alc-inc-${i}" onchange="updateAlcance(${i})" style="width:70px;">
+                    <option value="Sí" selected>Sí</option>
+                    <option value="No">No</option>
+                </select>
+            </td>
+            <td id="meta-${i}">3</td>
+            <td><input type="text" id="alc-just-${i}" placeholder="Justifique..." oninput="updateAlcance(${i})" style="width:150px;"></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateAlcance(i) {
+    const prio = document.getElementById(`alc-prio-${i}`).value;
+    const enalc = document.getElementById(`alc-inc-${i}`).value;
+    const just = document.getElementById(`alc-just-${i}`);
+    const meta = prio === 'Alta' ? 4 : prio === 'Media' ? 3 : 2;
+    document.getElementById(`meta-${i}`).textContent = meta;
+    if (enalc === 'Sí' && !just.value.trim()) just.classList.add('invalid-input');
+    else just.classList.remove('invalid-input');
+    actualizarKPIsAlcance();
+    updateGlobalProgress();
+}
+
+function actualizarKPIsAlcance() {
+    let enAlcance = 0, sinJust = 0;
+    OBJETIVOS.forEach((_, i) => {
+        if (document.getElementById(`alc-inc-${i}`).value === 'Sí') {
+            enAlcance++;
+            if (!document.getElementById(`alc-just-${i}`).value.trim()) sinJust++;
+        }
+    });
+    document.getElementById('kpiAlcanceCount').textContent = enAlcance;
+    document.getElementById('kpiSinJust').textContent = sinJust;
+    document.getElementById('kpiSinJust').className = sinJust > 0 ? 'value danger' : 'value success';
+}
+
+function initCapacidad() {
+    const tbody = document.getElementById('capacidadBody');
+    tbody.innerHTML = '';
+    OBJETIVOS.forEach((o, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${o.cod}</strong></td>
+            <td><small>${o.nom}</small></td>
+            <td id="cap-enalc-${i}">—</td>
+            <td>
+                <select id="cap-nivel-${i}" onchange="updateCapacidad(${i})" style="width:100px;">
+                    <option value="">—</option>
+                    <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                    <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                </select>
+            </td>
+            <td id="cap-meta-${i}">—</td>
+            <td id="cap-brecha-${i}">—</td>
+            <td id="cap-estado-${i}">—</td>
+            <td id="cap-nombre-${i}">—</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateCapacidad(i) {
+    const nivel = parseInt(document.getElementById(`cap-nivel-${i}`).value);
+    const prio = document.getElementById(`alc-prio-${i}`).value;
+    const enalc = document.getElementById(`alc-inc-${i}`).value;
+    const meta = prio === 'Alta' ? 4 : prio === 'Media' ? 3 : 2;
+    document.getElementById(`cap-meta-${i}`).textContent = meta;
+    // Nombres de nivel tomados de la tabla de escalas editada por el usuario
+    const nombres = ESCALAS_DEFAULT.map((_, j) => document.getElementById(`esc-nom-${j}`)?.value || '');
+    if (isNaN(nivel)) {
+        document.getElementById(`cap-brecha-${i}`).textContent = '—';
+        document.getElementById(`cap-estado-${i}`).textContent = '—';
+        document.getElementById(`cap-nombre-${i}`).textContent = '—';
+        if (enalc === 'Sí') document.getElementById(`cap-nivel-${i}`).classList.add('invalid-input');
+    } else {
+        document.getElementById(`cap-nombre-${i}`).textContent = nombres[nivel] || '—';
+        const brecha = Math.max(meta - nivel, 0);
+        document.getElementById(`cap-brecha-${i}`).textContent = brecha;
+        const est = brecha === 0 ? 'Alcanzado' : brecha === 1 ? 'Brecha menor' : 'Brecha crítica';
+        const cls = brecha === 0 ? 'badge-bajo' : brecha === 1 ? 'badge-medio' : 'badge-critico';
+        document.getElementById(`cap-estado-${i}`).innerHTML = `<span class="badge-status ${cls}">${est}</span>`;
+        document.getElementById(`cap-nivel-${i}`).classList.remove('invalid-input');
+    }
+    updateGlobalProgress();
+}
+
+function initRiesgos() {
+    const tbody = document.getElementById('riesgosBody');
+    tbody.innerHTML = '';
+    RIESGOS.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${r.n}</td>
+            <td><input type="text" id="rie-nom-${i}" value="${r.riesgo}" style="width:180px;"></td>
+            <td><input type="text" id="rie-desc-${i}" value="${r.desc}" style="width:250px;"></td>
+            <td><input type="number" id="rie-prob-${i}" min="1" max="5" value="${r.prob}" style="width:70px;" onchange="updateRiesgo(${i})"></td>
+            <td><input type="number" id="rie-impact-${i}" min="1" max="5" value="${r.impact}" style="width:70px;" onchange="updateRiesgo(${i})"></td>
+            <td id="rie-nivel-${i}">—</td>
+            <td><input type="text" id="rie-estr-${i}" value="${r.estrategia}" style="width:250px;"></td>
+        `;
+        tbody.appendChild(tr);
+        updateRiesgo(i);
+    });
+}
+
+function updateRiesgo(i) {
+    const prob = parseInt(document.getElementById(`rie-prob-${i}`).value) || 0;
+    const impact = parseInt(document.getElementById(`rie-impact-${i}`).value) || 0;
+    const nivel = prob * impact;
+    const clasif = nivel >= 15 ? 'Crítico' : nivel >= 8 ? 'Alto' : nivel >= 4 ? 'Medio' : 'Bajo';
+    document.getElementById(`rie-nivel-${i}`).innerHTML = `<span class="badge-status badge-${clasif.toLowerCase()}">${clasif} (${nivel})</span>`;
+}
+
+function initEvidencias() {
+    const tbody = document.getElementById('evidenciasBody');
+    tbody.innerHTML = '';
+    EVIDENCIAS.forEach((e, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${e.n}</td>
+            <td><input type="text" id="ev-obj-${i}" value="${e.obj}" style="width:80px;"></td>
+            <td><input type="text" id="ev-doc-${i}" value="${e.doc}" style="width:200px;"></td>
+            <td><input type="text" id="ev-area-${i}" value="${e.area}" style="width:130px;"></td>
+            <td><input type="date" id="ev-fsol-${i}" value="${e.fsol}" style="width:130px;"></td>
+            <td><input type="date" id="ev-fcomp-${i}" value="${e.fcomp}" style="width:130px;"></td>
+            <td><input type="date" id="ev-frec-${i}" value="${e.frec}" style="width:130px;"></td>
+            <td>
+                <select id="ev-estado-${i}" style="width:110px;">
+                    <option value="Pendiente" ${e.estado==='Pendiente'?'selected':''}>Pendiente</option>
+                    <option value="Recibido" ${e.estado==='Recibido'?'selected':''}>Recibido</option>
+                    <option value="No aplica" ${e.estado==='No aplica'?'selected':''}>No aplica</option>
+                </select>
+            </td>
+            <td><input type="text" id="ev-obs-${i}" value="${e.obs}" style="width:120px;"></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function initPrograma() {
+    const tbody = document.getElementById('programaBody');
+    tbody.innerHTML = '';
+    OBJETIVOS.forEach((o, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${o.cod}</strong></td>
+            <td><small>${o.nom}</small></td>
+            <td id="prog-enalc-${i}">Sí</td>
+            <td><input type="text" id="prog-proc-${i}" placeholder="Procedimiento..." style="width:250px;"></td>
+            <td>
+                <select id="prog-result-${i}" style="width:100px;" onchange="updatePrograma(${i})">
+                    <option value="">—</option>
+                    <option value="Cumple">Cumple</option>
+                    <option value="Parcial">Parcial</option>
+                    <option value="No cumple">No cumple</option>
+                </select>
+            </td>
+            <td id="prog-punt-${i}">—</td>
+            <td>
+                <select id="prog-tipo-${i}" style="width:100px;">
+                    <option value="Documental">Documental</option>
+                    <option value="Entrevista">Entrevista</option>
+                    <option value="Observación">Observación</option>
+                </select>
+            </td>
+            <td><input type="text" id="prog-ref-${i}" placeholder="Ref." style="width:90px;"></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updatePrograma(i) {
+    const res = document.getElementById(`prog-result-${i}`).value;
+    const punt = res === 'Cumple' ? 100 : res === 'Parcial' ? 50 : res === 'No cumple' ? 0 : '';
+    document.getElementById(`prog-punt-${i}`).textContent = punt !== '' ? punt : '—';
+    let suma = 0, count = 0;
+    OBJETIVOS.forEach((_, j) => {
+        const r = document.getElementById(`prog-result-${j}`)?.value;
+        if (r) { suma += r === 'Cumple' ? 100 : r === 'Parcial' ? 50 : 0; count++; }
+    });
+    document.getElementById('kpiProgProm').textContent = count > 0 ? (suma/count).toFixed(0) + '%' : '—';
+}
+
+function initMuestreo() {
+    const tbody = document.getElementById('muestreoBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i+1}</td>
+            <td><input type="text" placeholder="Objetivo" style="width:100px;"></td>
+            <td><input type="text" placeholder="Población" style="width:120px;"></td>
+            <td><input type="text" placeholder="Muestra" style="width:120px;"></td>
+            <td><input type="text" placeholder="Método" style="width:120px;"></td>
+            <td><input type="text" placeholder="Criterio" style="width:120px;"></td>
+            <td><input type="text" placeholder="Resultado" style="width:120px;"></td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+function initHallazgos() {
+    const tbody = document.getElementById('hallazgosBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${i+1}</td>
+            <td><input type="text" placeholder="Objetivo" style="width:100px;"></td>
+            <td><input type="text" placeholder="Título" style="width:160px;"></td>
+            <td><input type="text" placeholder="Condición" style="width:200px;"></td>
+            <td><input type="number" min="1" max="5" placeholder="1-5" style="width:70px;" onchange="updateHallazgo(${i})"></td>
+            <td><input type="number" min="1" max="5" placeholder="1-5" style="width:70px;" onchange="updateHallazgo(${i})"></td>
+            <td id="hal-nivel-${i}">—</td>
+            <td id="hal-clasif-${i}">—</td>
+            <td><input type="text" placeholder="Responsable" style="width:120px;"></td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+function updateHallazgo(i) {
+    const prob = parseInt(document.querySelector(`#hallazgosBody tr:nth-child(${i+1}) td:nth-child(5) input`)?.value) || 0;
+    const impact = parseInt(document.querySelector(`#hallazgosBody tr:nth-child(${i+1}) td:nth-child(6) input`)?.value) || 0;
+    const nivel = prob * impact;
+    const clasif = nivel >= 15 ? 'Crítico' : nivel >= 8 ? 'Alto' : nivel >= 4 ? 'Medio' : 'Bajo';
+    document.getElementById(`hal-nivel-${i}`).textContent = nivel || '—';
+    document.getElementById(`hal-clasif-${i}`).innerHTML = nivel ? `<span class="badge-status badge-${clasif.toLowerCase()}">${clasif}</span>` : '—';
+}
+
+function initPlan() {
+    const tbody = document.getElementById('planBody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>PA-${String(i+1).padStart(2,'0')}</td>
+            <td><input type="text" placeholder="Hallazgo" style="width:140px;"></td>
+            <td><input type="text" placeholder="Acción correctiva" style="width:200px;"></td>
+            <td><input type="text" placeholder="Responsable" style="width:130px;"></td>
+            <td><input type="date" style="width:140px;"></td>
+            <td><input type="number" min="0" max="100" value="0" style="width:70px;" onchange="updatePlan(${i})"></td>
+            <td id="plan-estado-${i}">Pendiente</td>
+            <td id="plan-dias-${i}">—</td>
+            <td id="plan-semaforo-${i}">—</td>
+        `;
+        tbody.appendChild(tr);
+    }
+}
+
+function updatePlan(i) {
+    const pct = parseInt(document.querySelector(`#planBody tr:nth-child(${i+1}) td:nth-child(6) input`)?.value) || 0;
+    const fechaInput = document.querySelector(`#planBody tr:nth-child(${i+1}) td:nth-child(5) input`);
+    const fecha = fechaInput?.value ? new Date(fechaInput.value) : null;
+    const hoy = new Date();
+    const dias = fecha ? Math.ceil((fecha - hoy) / (1000*60*60*24)) : null;
+    const estado = pct === 100 ? 'Completado' : pct > 0 ? 'En progreso' : 'Pendiente';
+    document.getElementById(`plan-estado-${i}`).textContent = estado;
+    document.getElementById(`plan-dias-${i}`).textContent = dias !== null ? (dias >= 0 ? dias : 'Vencido') : '—';
+    let semaforo = '—';
+    if (pct === 100) semaforo = '✅';
+    else if (dias !== null && dias < 0) semaforo = '🔴';
+    else if (dias !== null && dias <= 7) semaforo = '🟡';
+    else if (dias !== null) semaforo = '🟢';
+    document.getElementById(`plan-semaforo-${i}`).textContent = semaforo;
+}
+
+function initResumen() {
+    const dominios = ['EDM','APO','BAI','DSS','MEA'];
+    const tbody = document.getElementById('resumenBody');
+    tbody.innerHTML = '';
+    dominios.forEach(dom => {
+        const objs = OBJETIVOS.filter(o => o.dom === dom);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${dom}</strong></td>
+            <td>${objs.length}</td>
+            <td>—</td><td>—</td><td>—</td><td>—</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+/* ============================================================
+   VALIDACIÓN Y PROGRESO
+   ============================================================ */
+function validateField(input, id) {
+    if (!input.value.trim()) { input.classList.add('invalid-input'); input.classList.remove('valid-input'); return false; }
+    else { input.classList.remove('invalid-input'); input.classList.add('valid-input'); return true; }
+}
+
+function updateGlobalProgress() {
+    let totalPuntos = 0, puntosObtenidos = 0;
+    totalPuntos += 4;
+    if (document.getElementById('p_entidad').value.trim()) puntosObtenidos++;
+    if (document.getElementById('p_area').value.trim()) puntosObtenidos++;
+    if (document.getElementById('p_periodo').value.trim()) puntosObtenidos++;
+    if (document.getElementById('p_auditor').value.trim()) puntosObtenidos++;
+
+    totalPuntos += 11;
+    FACTORES.forEach((_, i) => { if (document.getElementById(`factor-val-${i}`)?.value) puntosObtenidos++; });
+
+    OBJETIVOS.forEach((_, i) => {
+        if (document.getElementById(`alc-inc-${i}`)?.value === 'Sí') {
+            totalPuntos++;
+            if (document.getElementById(`alc-just-${i}`)?.value.trim()) puntosObtenidos++;
+        }
+    });
+
+    OBJETIVOS.forEach((_, i) => {
+        if (document.getElementById(`alc-inc-${i}`)?.value === 'Sí') {
+            totalPuntos++;
+            if (document.getElementById(`cap-nivel-${i}`)?.value !== '') puntosObtenidos++;
+        }
+    });
+
+    // Formularios COBIT
+    if (typeof COBIT_FORMS !== 'undefined') {
+        OBJETIVOS.forEach(function(o) {
+            var form = COBIT_FORMS[o.cod];
+            if (!form) return;
+            form.preguntas.forEach(function(_, i) {
+                totalPuntos++;
+                var el = document.getElementById('form-'+o.cod+'-q'+i);
+                if (el && el.value) puntosObtenidos++;
+            });
+        });
+    }
+
+    const pct = totalPuntos > 0 ? Math.round((puntosObtenidos / totalPuntos) * 100) : 0;
+    document.getElementById('globalProgressFill').style.width = pct + '%';
+    document.getElementById('globalProgressPct').textContent = pct + '%';
+    const fill = document.getElementById('globalProgressFill');
+    if (pct === 100) fill.style.background = 'var(--secondary)';
+    else if (pct > 50) fill.style.background = 'var(--warning)';
+    else fill.style.background = 'var(--danger)';
+}
+
+function validarPasoActual() {
+    const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+    if (!activeTab) return;
+    let errores = 0;
+    if (activeTab === 'portada') {
+        ['p_entidad','p_area','p_periodo','p_auditor'].forEach(id => {
+            if (!validateField(document.getElementById(id), id)) errores++;
+        });
+    } else if (activeTab === 'factores') {
+        FACTORES.forEach((_, i) => {
+            const sel = document.getElementById(`factor-val-${i}`);
+            if (!sel.value) { sel.classList.add('invalid-input'); errores++; }
+            else sel.classList.remove('invalid-input');
+        });
+    } else if (activeTab === 'alcance') {
+        OBJETIVOS.forEach((_, i) => {
+            if (document.getElementById(`alc-inc-${i}`).value === 'Sí') {
+                const just = document.getElementById(`alc-just-${i}`);
+                if (!just.value.trim()) { just.classList.add('invalid-input'); errores++; }
+                else just.classList.remove('invalid-input');
+            }
+        });
+    } else if (activeTab === 'capacidad') {
+        OBJETIVOS.forEach((_, i) => {
+            if (document.getElementById(`alc-inc-${i}`).value === 'Sí') {
+                const nivel = document.getElementById(`cap-nivel-${i}`);
+                if (!nivel.value) { nivel.classList.add('invalid-input'); errores++; }
+                else nivel.classList.remove('invalid-input');
+            }
+        });
+    } else if (activeTab === 'informe') {
+        ['i_opinion','i_firma'].forEach(id => {
+            if (!validateField(document.getElementById(id), id)) errores++;
+        });
+    } else {
+        mostrarToast('✅ Esta pestaña no requiere validación obligatoria.', 'success');
+        return;
+    }
+    if (errores === 0) mostrarToast('✅ Paso validado correctamente.', 'success');
+    else mostrarToast(`⚠️ Faltan ${errores} campo(s) obligatorio(s). Revisa los bordes rojos.`, 'error');
+    updateGlobalProgress();
+}
+
+/* ============================================================
+   EXPORTACIÓN EXCEL CON ESTILOS (TABLAS AGRADABLES)
+   ============================================================ */
+const COLORS = {
+    titleBg: "1A5276",
+    titleFg: "FFFFFF",
+    headerBg: "2980B9",
+    headerFg: "FFFFFF",
+    bandBg: "EAF2F8",
+    border: "B0BEC5",
+    inputCell: "FFF9C4",
+    kpiBg: "E8F8F5",
+    kpiFg: "1A5276"
+};
+
+function buildStyledSheet(title, headers, rows, colWidths, opts = {}) {
+    const aoa = [];
+    aoa.push([title]);
+    aoa.push([]);
+    aoa.push(headers);
+    rows.forEach(r => aoa.push(r));
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+    ws['!cols'] = colWidths.map(w => ({ wch: w }));
+
+    const lastCol = headers.length - 1;
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: lastCol } }];
+
+    const titleAddr = XLSX.utils.encode_cell({ r: 0, c: 0 });
+    ws[titleAddr].s = {
+        font: { bold: true, sz: 14, color: { rgb: COLORS.titleFg } },
+        fill: { patternType: 'solid', fgColor: { rgb: COLORS.titleBg } },
+        alignment: { horizontal: 'center', vertical: 'center' }
+    };
+
+    for (let C = 0; C <= lastCol; C++) {
+        const addr = XLSX.utils.encode_cell({ r: 2, c: C });
+        ws[addr].s = {
+            font: { bold: true, sz: 10, color: { rgb: COLORS.headerFg } },
+            fill: { patternType: 'solid', fgColor: { rgb: COLORS.headerBg } },
+            alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+            border: {
+                top:    { style: 'thin', color: { rgb: COLORS.border } },
+                bottom: { style: 'thin', color: { rgb: COLORS.border } },
+                left:   { style: 'thin', color: { rgb: COLORS.border } },
+                right:  { style: 'thin', color: { rgb: COLORS.border } }
+            }
+        };
+    }
+
+    for (let R = 3; R < aoa.length; R++) {
+        const band = (R % 2 === 0);
+        for (let C = 0; C <= lastCol; C++) {
+            const addr = XLSX.utils.encode_cell({ r: R, c: C });
+            if (!ws[addr]) ws[addr] = { t: 's', v: '' };
+            const cell = ws[addr];
+            cell.s = {
+                font: { sz: 10 },
+                fill: band ? { patternType: 'solid', fgColor: { rgb: COLORS.bandBg } } : undefined,
+                alignment: { vertical: 'center', wrapText: true, horizontal: (C === 0 ? 'center' : 'left') },
+                border: {
+                    top:    { style: 'thin', color: { rgb: COLORS.border } },
+                    bottom: { style: 'thin', color: { rgb: COLORS.border } },
+                    left:   { style: 'thin', color: { rgb: COLORS.border } },
+                    right:  { style: 'thin', color: { rgb: COLORS.border } }
+                }
+            };
+            if (opts.highlightEmpty && (cell.v === '' || cell.v === null || cell.v === undefined) && C > 0) {
+                cell.s.fill = { patternType: 'solid', fgColor: { rgb: COLORS.inputCell } };
+            }
+        }
+    }
+
+    if (aoa.length > 3) {
+        ws['!autofilter'] = {
+            ref: XLSX.utils.encode_range({
+                s: { r: 2, c: 0 },
+                e: { r: aoa.length - 1, c: lastCol }
+            })
+        };
+    }
+    return ws;
+}
+
+function buildPortadaSheet(vacio) {
+    const data = [
+        ['AUDITORÍA DE GOBIERNO Y GESTIÓN DE I&T — COBIT 2019'],
+        [],
+        ['DATO', 'VALOR'],
+        ['Entidad auditada', vacio ? '' : document.getElementById('p_entidad').value],
+        ['Unidad / área auditada', vacio ? '' : document.getElementById('p_area').value],
+        ['Período evaluado', vacio ? '' : document.getElementById('p_periodo').value],
+        ['Auditor líder', vacio ? '' : document.getElementById('p_auditor').value],
+        ['Equipo auditor', vacio ? '' : document.getElementById('p_equipo').value],
+        ['Fecha de inicio', vacio ? '' : document.getElementById('p_fecha_ini').value],
+        ['Fecha de cierre', vacio ? '' : document.getElementById('p_fecha_fin').value],
+        ['Versión del papel de trabajo', '2.0'],
+        ['Referencia normativa', 'COBIT 2019 (ISACA)'],
+        ['Objetivo de la auditoría', vacio ? '' : document.getElementById('p_objetivo').value]
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{ wch: 32 }, { wch: 70 }];
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }];
+
+    ws['A1'].s = {
+        font: { bold: true, sz: 16, color: { rgb: COLORS.titleFg } },
+        fill: { patternType: 'solid', fgColor: { rgb: COLORS.titleBg } },
+        alignment: { horizontal: 'center', vertical: 'center' }
+    };
+    ['A3','B3'].forEach(a => {
+        ws[a].s = {
+            font: { bold: true, color: { rgb: COLORS.headerFg } },
+            fill: { patternType: 'solid', fgColor: { rgb: COLORS.headerBg } },
+            alignment: { horizontal: 'center' },
+            border: { top:{style:'thin',color:{rgb:COLORS.border}}, bottom:{style:'thin',color:{rgb:COLORS.border}}, left:{style:'thin',color:{rgb:COLORS.border}}, right:{style:'thin',color:{rgb:COLORS.border}} }
+        };
+    });
+    for (let R = 3; R < data.length; R++) {
+        const band = (R % 2 === 0);
+        ['A','B'].forEach((col, idx) => {
+            const addr = col + (R+1);
+            if (!ws[addr]) ws[addr] = { t:'s', v:'' };
+            ws[addr].s = {
+                font: { sz: 11, bold: idx === 0 },
+                fill: band ? { patternType:'solid', fgColor:{rgb:COLORS.bandBg} } : undefined,
+                alignment: { vertical:'center', wrapText:true },
+                border: { top:{style:'thin',color:{rgb:COLORS.border}}, bottom:{style:'thin',color:{rgb:COLORS.border}}, left:{style:'thin',color:{rgb:COLORS.border}}, right:{style:'thin',color:{rgb:COLORS.border}} }
+            };
+            if (vacio && idx === 1 && !ws[addr].v) {
+                ws[addr].s.fill = { patternType:'solid', fgColor:{rgb:COLORS.inputCell} };
+            }
+        });
+    }
+    return ws;
+}
+
+function buildContextoSheet(vacio) {
+    const campos = [
+        ['Misión / Visión', 'c_mision'],
+        ['Estrategia del negocio', 'c_estrategia'],
+        ['Estructura organizacional (TI)', 'c_estructura'],
+        ['Principales procesos de negocio', 'c_procesos'],
+        ['Marco regulatorio aplicable', 'c_regulatorio'],
+        ['Historial de auditorías previas', 'c_historial'],
+        ['Madurez percibida de I&T', 'c_madurez']
+    ];
+    const data = [['CONTEXTO DE LA ENTIDAD'], [], ['ELEMENTO', 'DESCRIPCIÓN']];
+    campos.forEach(([label, id]) => {
+        data.push([label, vacio ? '' : (document.getElementById(id)?.value || '')]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{ wch: 32 }, { wch: 80 }];
+    ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:1} }];
+    ws['A1'].s = {
+        font: { bold:true, sz:14, color:{rgb:COLORS.titleFg} },
+        fill: { patternType:'solid', fgColor:{rgb:COLORS.titleBg} },
+        alignment: { horizontal:'center', vertical:'center' }
+    };
+    ['A3','B3'].forEach(a => {
+        ws[a].s = {
+            font: { bold:true, color:{rgb:COLORS.headerFg} },
+            fill: { patternType:'solid', fgColor:{rgb:COLORS.headerBg} },
+            alignment: { horizontal:'center' },
+            border: { top:{style:'thin',color:{rgb:COLORS.border}}, bottom:{style:'thin',color:{rgb:COLORS.border}}, left:{style:'thin',color:{rgb:COLORS.border}}, right:{style:'thin',color:{rgb:COLORS.border}} }
+        };
+    });
+    for (let R = 3; R < data.length; R++) {
+        const band = (R % 2 === 0);
+        ['A','B'].forEach((col, idx) => {
+            const addr = col + (R+1);
+            ws[addr].s = {
+                font: { sz:11, bold: idx===0 },
+                fill: band ? { patternType:'solid', fgColor:{rgb:COLORS.bandBg} } : undefined,
+                alignment: { vertical:'center', wrapText:true },
+                border: { top:{style:'thin',color:{rgb:COLORS.border}}, bottom:{style:'thin',color:{rgb:COLORS.border}}, left:{style:'thin',color:{rgb:COLORS.border}}, right:{style:'thin',color:{rgb:COLORS.border}} }
+            };
+            if (vacio && idx===1 && !ws[addr].v) {
+                ws[addr].s.fill = { patternType:'solid', fgColor:{rgb:COLORS.inputCell} };
+            }
+        });
+    }
+    return ws;
+}
+
+function buildEscalasSheet(vacio) {
+    const headers = ['Nivel','Nombre','Descripción'];
+    const rows = ESCALAS_DEFAULT.map((e, i) => {
+        if (vacio) return [e.nivel, '', ''];
+        const nom = document.getElementById(`esc-nom-${i}`)?.value || '';
+        const desc = document.getElementById(`esc-desc-${i}`)?.value || '';
+        return [e.nivel, nom, desc];
+    });
+    return buildStyledSheet('ESCALAS DE REFERENCIA — MODELO DE CAPACIDAD COBIT 2019', headers, rows, [10, 25, 80], { highlightEmpty: vacio });
+}
+
+function buildFactoresSheet(vacio) {
+    const headers = ['N°','Factor de diseño','Qué evaluar','Valoración','Valor','Peso (1-5)','Puntaje','Observaciones'];
+    const rows = FACTORES.map((f, i) => {
+        const sel = document.getElementById(`factor-val-${i}`);
+        const val = vacio ? '' : (sel?.value || '');
+        const valorNum = val === 'Bajo' ? 1 : val === 'Medio' ? 2 : val === 'Alto' ? 3 : '';
+        const peso = vacio ? '' : (sel?.closest('tr').querySelector('input[type="number"]')?.value || 3);
+        const punt = vacio ? '' : document.getElementById(`fpun-${i}`)?.textContent || '';
+        const obs = vacio ? '' : (sel?.closest('tr').querySelectorAll('input[type="text"]')[1]?.value || '');
+        return [f.n, f.nombre, f.evaluar, val, valorNum, peso, punt, obs];
+    });
+    return buildStyledSheet('FACTORES DE DISEÑO COBIT 2019', headers, rows, [5, 28, 50, 12, 8, 10, 10, 25], { highlightEmpty: vacio });
+}
+
+function buildAlcanceSheet(vacio) {
+    const headers = ['Código','Dominio','Objetivo','Prioridad','En alcance','Nivel meta','Justificación'];
+    const rows = OBJETIVOS.map((o, i) => {
+        const prio = vacio ? '' : document.getElementById(`alc-prio-${i}`)?.value || '';
+        const inc = vacio ? '' : document.getElementById(`alc-inc-${i}`)?.value || '';
+        const meta = vacio ? '' : document.getElementById(`meta-${i}`)?.textContent || '';
+        const just = vacio ? '' : document.getElementById(`alc-just-${i}`)?.value || '';
+        return [o.cod, o.dom, o.nom, prio, inc, meta, just];
+    });
+    return buildStyledSheet('ALCANCE: OBJETIVOS COBIT 2019', headers, rows, [10, 8, 50, 10, 10, 10, 30], { highlightEmpty: vacio });
+}
+
+function buildRiesgosSheet(vacio) {
+    const headers = ['N°','Riesgo','Descripción','Prob. (1-5)','Impacto (1-5)','Riesgo','Estrategia'];
+    const rows = RIESGOS.map((r, i) => {
+        const nom = vacio ? '' : document.getElementById(`rie-nom-${i}`)?.value || r.riesgo;
+        const desc = vacio ? '' : document.getElementById(`rie-desc-${i}`)?.value || r.desc;
+        const prob = vacio ? '' : document.getElementById(`rie-prob-${i}`)?.value || r.prob;
+        const impact = vacio ? '' : document.getElementById(`rie-impact-${i}`)?.value || r.impact;
+        const nivel = vacio ? '' : (prob * impact);
+        const estr = vacio ? '' : document.getElementById(`rie-estr-${i}`)?.value || r.estrategia;
+        return [r.n, nom, desc, prob, impact, nivel, estr];
+    });
+    return buildStyledSheet('RIESGOS DE LA AUDITORÍA', headers, rows, [5, 28, 45, 10, 10, 10, 45], { highlightEmpty: vacio });
+}
+
+function buildEvidenciasSheet(vacio) {
+    const headers = ['N°','Objetivo','Documento solicitado','Área responsable','Fecha solicitud','Fecha compromiso','Fecha recepción','Estado','Obs.'];
+    const rows = EVIDENCIAS.map((e, i) => {
+        const obj = vacio ? '' : document.getElementById(`ev-obj-${i}`)?.value || e.obj;
+        const doc = vacio ? '' : document.getElementById(`ev-doc-${i}`)?.value || e.doc;
+        const area = vacio ? '' : document.getElementById(`ev-area-${i}`)?.value || e.area;
+        const fsol = vacio ? '' : document.getElementById(`ev-fsol-${i}`)?.value || e.fsol;
+        const fcomp = vacio ? '' : document.getElementById(`ev-fcomp-${i}`)?.value || e.fcomp;
+        const frec = vacio ? '' : document.getElementById(`ev-frec-${i}`)?.value || e.frec;
+        const estado = vacio ? '' : document.getElementById(`ev-estado-${i}`)?.value || e.estado;
+        const obs = vacio ? '' : document.getElementById(`ev-obs-${i}`)?.value || e.obs;
+        return [e.n, obj, doc, area, fsol, fcomp, frec, estado, obs];
+    });
+    return buildStyledSheet('SOLICITUD DE EVIDENCIAS (PBC)', headers, rows, [5, 10, 30, 20, 14, 14, 14, 12, 20], { highlightEmpty: vacio });
+}
+
+function buildProgramaSheet(vacio) {
+    const headers = ['Código','Objetivo','En alcance','Procedimiento de auditoría','Resultado','Puntaje','Tipo prueba','Ref. Evidencia'];
+    const rows = OBJETIVOS.map((o, i) => {
+        const enalc = vacio ? '' : document.getElementById(`prog-enalc-${i}`)?.textContent || 'Sí';
+        const proc = vacio ? '' : document.getElementById(`prog-proc-${i}`)?.value || '';
+        const result = vacio ? '' : document.getElementById(`prog-result-${i}`)?.value || '';
+        const punt = vacio ? '' : document.getElementById(`prog-punt-${i}`)?.textContent || '';
+        const tipo = vacio ? '' : document.getElementById(`prog-tipo-${i}`)?.value || 'Documental';
+        const ref = vacio ? '' : document.getElementById(`prog-ref-${i}`)?.value || '';
+        return [o.cod, o.nom, enalc, proc, result, punt, tipo, ref];
+    });
+    return buildStyledSheet('PROGRAMA DE AUDITORÍA', headers, rows, [10, 40, 10, 40, 12, 8, 14, 14], { highlightEmpty: vacio });
+}
+
+function buildMuestreoSheet(vacio) {
+    const headers = ['N°','Objetivo','Población','Muestra','Método','Criterio','Resultado'];
+    const rows = [];
+    for (let i = 0; i < 5; i++) {
+        const tr = document.querySelector(`#muestreoBody tr:nth-child(${i+1})`);
+        const vals = [];
+        for (let j = 1; j <= 6; j++) {
+            const inp = tr?.querySelector(`td:nth-child(${j+1}) input`);
+            vals.push(vacio ? '' : (inp?.value || ''));
+        }
+        rows.push([i+1, ...vals]);
+    }
+    return buildStyledSheet('MUESTREO Y PRUEBAS', headers, rows, [5, 14, 20, 20, 20, 20, 20], { highlightEmpty: vacio });
+}
+
+function buildCapacidadSheet(vacio) {
+    const headers = ['Código','Objetivo','En alcance','Nivel actual','Nivel meta','Brecha','Estado','Nivel (nombre)'];
+    const rows = OBJETIVOS.map((o, i) => {
+        const enalc = vacio ? '' : document.getElementById(`cap-enalc-${i}`)?.textContent || '';
+        const nivel = vacio ? '' : document.getElementById(`cap-nivel-${i}`)?.value || '';
+        const meta = vacio ? '' : document.getElementById(`cap-meta-${i}`)?.textContent || '';
+        const brecha = vacio ? '' : document.getElementById(`cap-brecha-${i}`)?.textContent || '';
+        const estado = vacio ? '' : document.getElementById(`cap-estado-${i}`)?.textContent?.trim() || '';
+        const nombre = vacio ? '' : document.getElementById(`cap-nombre-${i}`)?.textContent || '';
+        return [o.cod, o.nom, enalc, nivel, meta, brecha, estado, nombre];
+    });
+    return buildStyledSheet('EVALUACIÓN DE CAPACIDAD', headers, rows, [10, 45, 10, 12, 12, 10, 18, 18], { highlightEmpty: vacio });
+}
+
+function buildHallazgosSheet(vacio) {
+    const headers = ['N°','Objetivo','Título','Condición','Prob.','Impacto','Riesgo','Clasificación','Responsable'];
+    const rows = [];
+    for (let i = 0; i < 6; i++) {
+        const tr = document.querySelector(`#hallazgosBody tr:nth-child(${i+1})`);
+        const obj = tr?.querySelector('td:nth-child(2) input')?.value || '';
+        const tit = tr?.querySelector('td:nth-child(3) input')?.value || '';
+        const cond = tr?.querySelector('td:nth-child(4) input')?.value || '';
+        const prob = tr?.querySelector('td:nth-child(5) input')?.value || '';
+        const impact = tr?.querySelector('td:nth-child(6) input')?.value || '';
+        const nivel = tr?.querySelector('td:nth-child(7)')?.textContent || '';
+        const clasif = tr?.querySelector('td:nth-child(8)')?.textContent || '';
+        const resp = tr?.querySelector('td:nth-child(9) input')?.value || '';
+        rows.push([i+1, vacio?'':obj, vacio?'':tit, vacio?'':cond, vacio?'':prob, vacio?'':impact, vacio?'':nivel, vacio?'':clasif, vacio?'':resp]);
+    }
+    return buildStyledSheet('MATRIZ DE HALLAZGOS', headers, rows, [5, 12, 28, 40, 8, 8, 10, 14, 20], { highlightEmpty: vacio });
+}
+
+function buildPlanSheet(vacio) {
+    const headers = ['N° acción','Hallazgo','Acción correctiva','Responsable','Fecha fin','% avance','Estado','Días rest.','Semáforo'];
+    const rows = [];
+    for (let i = 0; i < 5; i++) {
+        const tr = document.querySelector(`#planBody tr:nth-child(${i+1})`);
+        const n = tr?.querySelector('td:nth-child(1)')?.textContent || `PA-${String(i+1).padStart(2,'0')}`;
+        const hall = tr?.querySelector('td:nth-child(2) input')?.value || '';
+        const acc = tr?.querySelector('td:nth-child(3) input')?.value || '';
+        const resp = tr?.querySelector('td:nth-child(4) input')?.value || '';
+        const fecha = tr?.querySelector('td:nth-child(5) input')?.value || '';
+        const pct = tr?.querySelector('td:nth-child(6) input')?.value || '';
+        const estado = tr?.querySelector('td:nth-child(7)')?.textContent || '';
+        const dias = tr?.querySelector('td:nth-child(8)')?.textContent || '';
+        const sem = tr?.querySelector('td:nth-child(9)')?.textContent || '';
+        rows.push([n, vacio?'':hall, vacio?'':acc, vacio?'':resp, vacio?'':fecha, vacio?'':pct, vacio?'':estado, vacio?'':dias, vacio?'':sem]);
+    }
+    return buildStyledSheet('PLAN DE ACCIÓN', headers, rows, [10, 22, 35, 20, 14, 10, 14, 12, 10], { highlightEmpty: vacio });
+}
+
+function buildResumenSheet(vacio) {
+    const headers = ['Dominio','Objetivos','Nivel actual','Nivel meta','Brecha','Cumplimiento'];
+    const rows = ['EDM','APO','BAI','DSS','MEA'].map(dom => {
+        const objs = OBJETIVOS.filter(o => o.dom === dom);
+        return [dom, objs.length, '', '', '', ''];
+    });
+    return buildStyledSheet('RESUMEN EJECUTIVO POR DOMINIO', headers, rows, [14, 12, 14, 12, 10, 14], { highlightEmpty: vacio });
+}
+
+function buildInformeSheet(vacio) {
+    const data = [
+        ['INFORME Y DICTAMEN'],
+        [],
+        ['ELEMENTO', 'VALOR'],
+        ['Opinión del auditor', vacio ? '' : (document.getElementById('i_opinion')?.value || '')],
+        ['Firma del auditor líder', vacio ? '' : (document.getElementById('i_firma')?.value || '')]
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{ wch: 30 }, { wch: 60 }];
+    ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:1} }];
+    ws['A1'].s = {
+        font: { bold:true, sz:14, color:{rgb:COLORS.titleFg} },
+        fill: { patternType:'solid', fgColor:{rgb:COLORS.titleBg} },
+        alignment: { horizontal:'center', vertical:'center' }
+    };
+    ['A3','B3'].forEach(a => {
+        ws[a].s = {
+            font: { bold:true, color:{rgb:COLORS.headerFg} },
+            fill: { patternType:'solid', fgColor:{rgb:COLORS.headerBg} },
+            alignment: { horizontal:'center' },
+            border: { top:{style:'thin',color:{rgb:COLORS.border}}, bottom:{style:'thin',color:{rgb:COLORS.border}}, left:{style:'thin',color:{rgb:COLORS.border}}, right:{style:'thin',color:{rgb:COLORS.border}} }
+        };
+    });
+    for (let R = 3; R < data.length; R++) {
+        const band = (R % 2 === 0);
+        ['A','B'].forEach((col, idx) => {
+            const addr = col + (R+1);
+            ws[addr].s = {
+                font: { sz:11, bold: idx===0 },
+                fill: band ? { patternType:'solid', fgColor:{rgb:COLORS.bandBg} } : undefined,
+                alignment: { vertical:'center', wrapText:true },
+                border: { top:{style:'thin',color:{rgb:COLORS.border}}, bottom:{style:'thin',color:{rgb:COLORS.border}}, left:{style:'thin',color:{rgb:COLORS.border}}, right:{style:'thin',color:{rgb:COLORS.border}} }
+            };
+            if (vacio && idx===1 && !ws[addr].v) {
+                ws[addr].s.fill = { patternType:'solid', fgColor:{rgb:COLORS.inputCell} };
+            }
+        });
+    }
+    return ws;
+}
+
+function exportarExcelVacio() {
+    try {
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, buildPortadaSheet(true), 'Portada');
+        XLSX.utils.book_append_sheet(wb, buildContextoSheet(true), 'Contexto');
+        XLSX.utils.book_append_sheet(wb, buildEscalasSheet(true), 'Escalas');
+        XLSX.utils.book_append_sheet(wb, buildFactoresSheet(true), 'Factores');
+        XLSX.utils.book_append_sheet(wb, buildAlcanceSheet(true), 'Alcance');
+        XLSX.utils.book_append_sheet(wb, buildRiesgosSheet(true), 'Riesgos');
+        XLSX.utils.book_append_sheet(wb, buildEvidenciasSheet(true), 'Evidencias');
+        XLSX.utils.book_append_sheet(wb, buildProgramaSheet(true), 'Programa');
+        XLSX.utils.book_append_sheet(wb, buildMuestreoSheet(true), 'Muestreo');
+        XLSX.utils.book_append_sheet(wb, buildCapacidadSheet(true), 'Capacidad');
+        XLSX.utils.book_append_sheet(wb, buildHallazgosSheet(true), 'Hallazgos');
+        XLSX.utils.book_append_sheet(wb, buildPlanSheet(true), 'Plan_Accion');
+        XLSX.utils.book_append_sheet(wb, buildResumenSheet(true), 'Resumen');
+        XLSX.utils.book_append_sheet(wb, buildInformeSheet(true), 'Informe');
+        XLSX.writeFile(wb, 'Plantilla_Vacia_Auditoria_COBIT_2019.xlsx', { cellStyles: true });
+        mostrarToast('✅ Plantilla vacía exportada con formato profesional.', 'success');
+    } catch (e) {
+        mostrarToast('❌ Error al exportar: ' + e.message, 'error');
+    }
+}
+
+function exportarExcelLleno() {
+    try {
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, buildPortadaSheet(false), 'Portada');
+        XLSX.utils.book_append_sheet(wb, buildContextoSheet(false), 'Contexto');
+        XLSX.utils.book_append_sheet(wb, buildEscalasSheet(false), 'Escalas');
+        XLSX.utils.book_append_sheet(wb, buildFactoresSheet(false), 'Factores');
+        XLSX.utils.book_append_sheet(wb, buildAlcanceSheet(false), 'Alcance');
+        XLSX.utils.book_append_sheet(wb, buildRiesgosSheet(false), 'Riesgos');
+        XLSX.utils.book_append_sheet(wb, buildEvidenciasSheet(false), 'Evidencias');
+        XLSX.utils.book_append_sheet(wb, buildProgramaSheet(false), 'Programa');
+        XLSX.utils.book_append_sheet(wb, buildMuestreoSheet(false), 'Muestreo');
+        XLSX.utils.book_append_sheet(wb, buildCapacidadSheet(false), 'Capacidad');
+        XLSX.utils.book_append_sheet(wb, buildHallazgosSheet(false), 'Hallazgos');
+        XLSX.utils.book_append_sheet(wb, buildPlanSheet(false), 'Plan_Accion');
+        XLSX.utils.book_append_sheet(wb, buildResumenSheet(false), 'Resumen');
+        XLSX.utils.book_append_sheet(wb, buildInformeSheet(false), 'Informe');
+        XLSX.writeFile(wb, 'Auditoria_COBIT_2019_Completa.xlsx', { cellStyles: true });
+        mostrarToast('✅ Datos exportados con formato profesional.', 'success');
+    } catch (e) {
+        mostrarToast('❌ Error al exportar: ' + e.message, 'error');
+    }
+}
+
+function exportarCSV() {
+    mostrarToast('📄 Exportación CSV en construcción...', 'warning');
+}
+
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+function mostrarToast(msg, tipo = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast show ' + tipo;
+    setTimeout(() => { toast.className = 'toast ' + tipo; }, 4000);
+}
+
+/* ============================================================
+   ARRANQUE Y EVENTOS
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    initEscalas();
+    initFactores();
+    initAlcance();
+    initCapacidad();
+    initRiesgos();
+    initEvidencias();
+    initPrograma();
+    initMuestreo();
+    initHallazgos();
+    initPlan();
+    initResumen();
+    updateGlobalProgress();
+
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('input', updateGlobalProgress);
+        el.addEventListener('change', updateGlobalProgress);
+    });
+
+    initFormulariosCOBIT();
+
+    document.getElementById('tabsNav').addEventListener('click', e => {
+        const btn = e.target.closest('.tab-btn');
+        if (!btn) return;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+});
+
+/* ============================================================
+   FORMULARIOS COBIT — DATOS Y FUNCIONES
+   ============================================================ */
+const COBIT_FORMS = {
+  EDM01: { preguntas: [
+    "¿Existe un marco de gobierno de TI formalmente aprobado por la alta dirección?",
+    "¿Se han definido y comunicado los principios de gobierno de TI?",
+    "¿Existen estructuras de toma de decisiones (comités, roles) documentadas?",
+    "¿Se revisa y actualiza periódicamente el marco de gobierno?",
+    "¿El marco de gobierno está alineado con los objetivos estratégicos de la organización?",
+    "¿Se han asignado responsabilidades claras de gobierno de TI?"
+  ]},
+  EDM02: { preguntas: [
+    "¿Existe un proceso para identificar y valorar los beneficios esperados de las inversiones en TI?",
+    "¿Se realiza seguimiento al cumplimiento de los beneficios comprometidos?",
+    "¿Los responsables de negocio participan en la gestión de beneficios?",
+    "¿Se documentan las desviaciones entre beneficios esperados y realizados?",
+    "¿Existe un portafolio de inversiones con métricas de valor?"
+  ]},
+  EDM03: { preguntas: [
+    "¿Se ha definido el apetito de riesgo de TI aprobado por la dirección?",
+    "¿Existe un proceso de identificación y evaluación de riesgos de TI?",
+    "¿Los riesgos de TI se comunican a la alta dirección de forma periódica?",
+    "¿Se toman decisiones de riesgo alineadas al apetito definido?",
+    "¿Existen controles para los riesgos críticos identificados?",
+    "¿Se revisa el perfil de riesgo de TI ante cambios significativos?"
+  ]},
+  EDM04: { preguntas: [
+    "¿Existe una estrategia de recursos de TI (humanos, financieros, tecnológicos)?",
+    "¿Los recursos de TI están alineados con las necesidades del negocio?",
+    "¿Se gestionan las capacidades de recursos clave (personal, infraestructura)?",
+    "¿Se optimiza el uso de recursos evitando duplicidades?",
+    "¿Existe un proceso de planificación de la capacidad de recursos?"
+  ]},
+  EDM05: { preguntas: [
+    "¿Se identifican y gestionan las expectativas de los grupos de interés?",
+    "¿Existe comunicación regular con partes interesadas sobre el desempeño de TI?",
+    "¿Se genera información de rendición de cuentas para la dirección?",
+    "¿Los informes de TI son precisos, oportunos y relevantes para las partes interesadas?",
+    "¿Se incorporan retroalimentaciones de partes interesadas en la gestión de TI?"
+  ]},
+  APO01: { preguntas: [
+    "¿Existe un conjunto de políticas y normas de TI aprobadas y vigentes?",
+    "¿Las políticas de TI están comunicadas y son accesibles a todo el personal?",
+    "¿Se revisan y actualizan las políticas periódicamente?",
+    "¿Existen roles y responsabilidades de TI claramente definidos?",
+    "¿Se cuenta con un proceso de gestión de excepciones a políticas?",
+    "¿El ambiente de control interno de TI está documentado?"
+  ]},
+  APO02: { preguntas: [
+    "¿Existe un Plan Estratégico de TI alineado con el plan de negocio?",
+    "¿El plan estratégico de TI está aprobado por la alta dirección?",
+    "¿Se realiza seguimiento al cumplimiento de los objetivos estratégicos de TI?",
+    "¿Se analiza el entorno externo e interno para la planificación estratégica?",
+    "¿Se comunica la estrategia de TI a los grupos de interés relevantes?",
+    "¿Existen planes tácticos derivados del plan estratégico?"
+  ]},
+  APO03: { preguntas: [
+    "¿Existe una arquitectura empresarial de TI documentada y vigente?",
+    "¿La arquitectura incluye los dominios de negocio, datos, aplicaciones e infraestructura?",
+    "¿Se utilizan estándares de arquitectura para las decisiones de TI?",
+    "¿Se gestiona el ciclo de vida de la arquitectura?",
+    "¿La arquitectura guía la selección y adquisición de tecnología?"
+  ]},
+  APO04: { preguntas: [
+    "¿Existe un proceso formal para identificar oportunidades de innovación tecnológica?",
+    "¿Se evalúan y priorizan las iniciativas de innovación?",
+    "¿Se realizan pruebas de concepto o pilotos antes de adoptar nuevas tecnologías?",
+    "¿Se documenta el aprendizaje de los proyectos de innovación?",
+    "¿La innovación tecnológica está alineada con la estrategia del negocio?"
+  ]},
+  APO05: { preguntas: [
+    "¿Existe un proceso de gestión del portafolio de programas y proyectos de TI?",
+    "¿Se priorizan las inversiones según criterios de valor y riesgo?",
+    "¿Se revisa periódicamente el portafolio activo?",
+    "¿Existe equilibrio entre proyectos de mantenimiento e innovación?",
+    "¿Se toman decisiones de continuación/cancelación basadas en datos objetivos?"
+  ]},
+  APO06: { preguntas: [
+    "¿Existe un presupuesto de TI anual formalmente aprobado?",
+    "¿Se realiza seguimiento mensual al gasto de TI vs. presupuesto?",
+    "¿Los costos de TI se asignan/facturan a las unidades de negocio?",
+    "¿Se realizan análisis costo-beneficio para las inversiones de TI?",
+    "¿Las desviaciones presupuestales se analizan y documentan?"
+  ]},
+  APO07: { preguntas: [
+    "¿Existe una política de gestión del talento humano de TI?",
+    "¿Se realizan evaluaciones de desempeño al personal de TI?",
+    "¿Existen planes de capacitación y desarrollo para el personal de TI?",
+    "¿Se gestiona la sucesión para roles clave de TI?",
+    "¿Se controla el acceso lógico basado en roles y funciones?",
+    "¿Se documenta el proceso de incorporación y retiro del personal de TI?"
+  ]},
+  APO08: { preguntas: [
+    "¿Existe una función de gestión de relaciones entre TI y el negocio?",
+    "¿Se establecen y gestionan acuerdos de nivel de servicio (SLA)?",
+    "¿Se gestionan las expectativas de los clientes internos de TI?",
+    "¿Se mide la satisfacción de los usuarios con los servicios de TI?",
+    "¿Se documentan y gestionan las escalaciones de quejas?"
+  ]},
+  APO09: { preguntas: [
+    "¿Existen SLA formalizados para todos los servicios críticos de TI?",
+    "¿Los SLA incluyen métricas, umbrales y consecuencias por incumplimiento?",
+    "¿Se revisan y renuevan los SLA periódicamente?",
+    "¿Se reporta el cumplimiento de SLA a las partes interesadas?",
+    "¿Los catálogos de servicios están actualizados y son accesibles?"
+  ]},
+  APO10: { preguntas: [
+    "¿Existe un registro centralizado de proveedores de TI?",
+    "¿Se realizan evaluaciones de riesgo de proveedores críticos?",
+    "¿Los contratos con proveedores incluyen cláusulas de seguridad y auditoría?",
+    "¿Se monitorea el desempeño de proveedores contra acuerdos contractuales?",
+    "¿Existen planes de contingencia ante fallas de proveedores clave?",
+    "¿Se gestiona la concentración de riesgo en proveedores?"
+  ]},
+  APO11: { preguntas: [
+    "¿Existe un sistema de gestión de calidad de TI documentado?",
+    "¿Se establecen estándares de calidad para productos y servicios de TI?",
+    "¿Se realizan revisiones y auditorías internas de calidad?",
+    "¿Se gestiona la mejora continua basada en resultados de calidad?",
+    "¿Los defectos y no conformidades se registran y analizan?"
+  ]},
+  APO12: { preguntas: [
+    "¿Existe un proceso formal de identificación y evaluación de riesgos de TI?",
+    "¿Se mantiene un registro actualizado de riesgos de TI?",
+    "¿Se definen y ejecutan planes de tratamiento de riesgos?",
+    "¿Se monitorean los riesgos residuales periódicamente?",
+    "¿Los riesgos críticos se comunican a la alta dirección?",
+    "¿Se integra la gestión de riesgos de TI con el riesgo corporativo?"
+  ]},
+  APO13: { preguntas: [
+    "¿Existe una política de seguridad de la información aprobada y vigente?",
+    "¿Se realiza análisis de riesgos de seguridad de forma periódica?",
+    "¿Se implementan controles basados en ISO 27001 u otro estándar reconocido?",
+    "¿Existe un proceso de gestión de incidentes de seguridad?",
+    "¿Se realizan pruebas de vulnerabilidades y penetración?",
+    "¿El personal recibe capacitación en seguridad de la información?"
+  ]},
+  APO14: { preguntas: [
+    "¿Existe una política de gestión de datos corporativos?",
+    "¿Se clasifica la información según su confidencialidad e importancia?",
+    "¿Existen controles de calidad de datos (completitud, precisión, integridad)?",
+    "¿Se gestiona el ciclo de vida de los datos (creación, uso, retención, eliminación)?",
+    "¿Se cumplen los requisitos de protección de datos personales?",
+    "¿Existen roles de dueño y custodio de datos definidos?"
+  ]},
+  BAI01: { preguntas: [
+    "¿Existe una metodología de gestión de programas adoptada formalmente?",
+    "¿Los programas tienen patrocinadores ejecutivos asignados?",
+    "¿Se gestionan las interdependencias entre proyectos del programa?",
+    "¿Se monitorea el avance y los beneficios del programa periódicamente?",
+    "¿Existe un proceso de gestión de cambios al alcance del programa?"
+  ]},
+  BAI02: { preguntas: [
+    "¿Existe un proceso formal para elicitar y documentar requisitos de negocio?",
+    "¿Los requisitos se validan con los usuarios antes del desarrollo?",
+    "¿Se gestionan los cambios a los requisitos durante el ciclo de vida?",
+    "¿Los requisitos son trazables hasta las funcionalidades entregadas?",
+    "¿Se realizan estudios de factibilidad antes de iniciar soluciones?"
+  ]},
+  BAI03: { preguntas: [
+    "¿Existe una metodología de desarrollo de software establecida?",
+    "¿Se realizan revisiones de código y pruebas antes de la implementación?",
+    "¿Se controlan las versiones de los componentes desarrollados?",
+    "¿Los ambientes de desarrollo, pruebas y producción están separados?",
+    "¿Se documentan las soluciones desarrolladas?",
+    "¿Se cumplen los estándares de seguridad en el desarrollo?"
+  ]},
+  BAI04: { preguntas: [
+    "¿Existe un plan de gestión de capacidad de infraestructura de TI?",
+    "¿Se monitorea el uso de recursos (CPU, memoria, almacenamiento) continuamente?",
+    "¿Se planifican con anticipación las necesidades de capacidad futura?",
+    "¿Se definen y monitorean umbrales de disponibilidad de sistemas críticos?",
+    "¿Se gestionan los cuellos de botella de rendimiento de forma proactiva?"
+  ]},
+  BAI05: { preguntas: [
+    "¿Se gestionan los impactos organizacionales asociados a cambios de TI?",
+    "¿Existen planes de gestión del cambio para proyectos significativos?",
+    "¿Se involucra a los usuarios afectados en la planificación del cambio?",
+    "¿Se realizan actividades de comunicación y capacitación ante cambios?",
+    "¿Se mide la adopción de los cambios implementados?"
+  ]},
+  BAI06: { preguntas: [
+    "¿Existe un proceso formal de gestión de cambios de TI documentado?",
+    "¿Todos los cambios son registrados, evaluados y aprobados antes de implementarse?",
+    "¿Se distinguen los cambios de emergencia de los cambios estándar?",
+    "¿Se revisa el resultado de los cambios post-implementación?",
+    "¿Se lleva un registro de cambios fallidos y sus causas?",
+    "¿Existe un Comité de Control de Cambios (CAB)?"
+  ]},
+  BAI07: { preguntas: [
+    "¿Existe un proceso formal de pruebas de aceptación de usuario (UAT)?",
+    "¿Se realizan pruebas de regresión antes de poner en producción?",
+    "¿Los planes de rollback están documentados y probados?",
+    "¿La documentación de usuario se actualiza con cada cambio?",
+    "¿Existe un proceso de paso a producción con aprobación formal?"
+  ]},
+  BAI08: { preguntas: [
+    "¿Existe una base de conocimiento de TI accesible al personal?",
+    "¿Se documenta el conocimiento crítico (procesos, configuraciones, lecciones aprendidas)?",
+    "¿Se gestiona el riesgo de pérdida de conocimiento por rotación de personal?",
+    "¿Se promueve el intercambio de conocimiento entre equipos?",
+    "¿La base de conocimiento se actualiza y depura periódicamente?"
+  ]},
+  BAI09: { preguntas: [
+    "¿Existe un inventario centralizado y actualizado de activos de TI (hardware y software)?",
+    "¿Se controla el ciclo de vida de los activos (adquisición, uso, baja)?",
+    "¿Se gestionan las licencias de software para evitar incumplimientos?",
+    "¿Los activos tienen responsables asignados?",
+    "¿Se realizan inventarios físicos periódicos de activos?"
+  ]},
+  BAI10: { preguntas: [
+    "¿Existe una base de datos de gestión de configuración (CMDB) actualizada?",
+    "¿Se controlan los cambios en la configuración de sistemas productivos?",
+    "¿Se realizan auditorías de configuración periódicas?",
+    "¿La CMDB está integrada con otros procesos (incidentes, cambios)?",
+    "¿Se gestionan las configuraciones de línea base (baseline)?"
+  ]},
+  BAI11: { preguntas: [
+    "¿Existe una metodología de gestión de proyectos formalmente adoptada?",
+    "¿Los proyectos tienen actas de inicio, cronograma y presupuesto aprobados?",
+    "¿Se realiza seguimiento semanal/quincenal del avance de proyectos?",
+    "¿Se gestionan formalmente los riesgos de los proyectos?",
+    "¿Se documentan lecciones aprendidas al cierre de proyectos?",
+    "¿Existe una Oficina de Gestión de Proyectos (PMO) o función equivalente?"
+  ]},
+  DSS01: { preguntas: [
+    "¿Existen procedimientos operativos estándar (SOP) documentados para las operaciones de TI?",
+    "¿Se monitorea el estado de los sistemas productivos en tiempo real?",
+    "¿Los trabajos programados (batch) se controlan y verifican?",
+    "¿Existe un proceso de gestión de eventos de TI?",
+    "¿Las operaciones de TI tienen registros de actividad (logs) habilitados?",
+    "¿Se realizan revisiones periódicas del desempeño operativo?"
+  ]},
+  DSS02: { preguntas: [
+    "¿Existe un proceso formal de registro y clasificación de incidentes?",
+    "¿Se definen y cumplen tiempos de resolución según criticidad (SLA)?",
+    "¿Se escalan los incidentes no resueltos dentro del tiempo establecido?",
+    "¿Se comunica el estado de los incidentes a los usuarios afectados?",
+    "¿Se analizan las tendencias de incidentes para identificar causas raíz?",
+    "¿Los incidentes críticos tienen un proceso de gestión de crisis?"
+  ]},
+  DSS03: { preguntas: [
+    "¿Existe un proceso formal de gestión de problemas diferenciado de incidentes?",
+    "¿Se identifican causas raíz de incidentes recurrentes?",
+    "¿Se registran y gestionan los errores conocidos?",
+    "¿Se implementan soluciones definitivas para problemas identificados?",
+    "¿Se mide la efectividad del proceso de gestión de problemas?"
+  ]},
+  DSS04: { preguntas: [
+    "¿Existe un Plan de Continuidad del Negocio (BCP) aprobado y vigente?",
+    "¿Existe un Plan de Recuperación ante Desastres (DRP) para sistemas críticos?",
+    "¿Se realizan pruebas y simulacros del BCP/DRP al menos una vez al año?",
+    "¿Se definen y cumplen los objetivos de recuperación (RTO/RPO)?",
+    "¿El BCP/DRP está actualizado ante cambios en infraestructura o negocio?",
+    "¿El personal conoce su rol en el plan de continuidad?"
+  ]},
+  DSS05: { preguntas: [
+    "¿Se gestionan los accesos lógicos con principio de mínimo privilegio?",
+    "¿Existen controles de seguridad perimetral (firewall, IDS/IPS)?",
+    "¿Se gestionan los certificados digitales y la criptografía de datos sensibles?",
+    "¿Se monitorean los accesos privilegiados y actividades sospechosas?",
+    "¿Existe un proceso de gestión de identidades y accesos (IAM)?",
+    "¿Se realizan revisiones periódicas de accesos de usuarios?"
+  ]},
+  DSS06: { preguntas: [
+    "¿Existen controles de TI integrados en los procesos críticos de negocio?",
+    "¿Se valida la integridad de los datos en los procesos automatizados?",
+    "¿Se gestionan los accesos a los sistemas de negocio con segregación de funciones?",
+    "¿Se realizan conciliaciones y verificaciones de datos entre sistemas?",
+    "¿Los controles de procesos de negocio están documentados y probados?"
+  ]},
+  MEA01: { preguntas: [
+    "¿Existe un cuadro de mando o dashboard de indicadores de TI?",
+    "¿Los indicadores de TI están alineados con los objetivos de negocio?",
+    "¿Se reportan los resultados de TI a la alta dirección periódicamente?",
+    "¿Se definen umbrales y se gestionan las desviaciones?",
+    "¿El proceso de monitoreo incluye métricas de proceso y resultado?"
+  ]},
+  MEA02: { preguntas: [
+    "¿Existe un marco de control interno de TI formalmente definido?",
+    "¿Se realizan autoevaluaciones de control interno de TI?",
+    "¿Las deficiencias de control se documentan y tienen planes de remediación?",
+    "¿Se mantiene evidencia de la operación de los controles clave?",
+    "¿El control interno de TI se integra con el control interno corporativo?",
+    "¿Se reportan los resultados del control interno a la dirección?"
+  ]},
+  MEA03: { preguntas: [
+    "¿Existe un inventario de requisitos legales y regulatorios aplicables a TI?",
+    "¿Se realiza seguimiento a los cambios regulatorios que afectan a TI?",
+    "¿Los controles de cumplimiento están mapeados a los requisitos normativos?",
+    "¿Se gestionan las brechas de cumplimiento con planes de acción?",
+    "¿Se generan reportes de cumplimiento para los reguladores?"
+  ]},
+  MEA04: { preguntas: [
+    "¿Existe un programa de aseguramiento independiente de TI?",
+    "¿Se realizan auditorías internas o externas de TI de forma periódica?",
+    "¿Los hallazgos de auditoría tienen seguimiento formal hasta su cierre?",
+    "¿La función de aseguramiento es independiente de las operaciones de TI?",
+    "¿Los resultados del aseguramiento se comunican a la dirección?"
+  ]}
+};
+
+function calcObjBadge(cod) {
+  var form = COBIT_FORMS[cod];
+  if (!form) return { cls:'obj-badge-nd', txt:'Sin evaluar' };
+  var n = form.preguntas.length;
+  var si=0, parcial=0, respondidas=0;
+  for (var i=0; i<n; i++) {
+    var el = document.getElementById('form-'+cod+'-q'+i);
+    var v = el ? el.value : '';
+    if (v && v !== '') {
+      respondidas++;
+      if (v === 'Si') si++;
+      else if (v === 'Parcial') parcial++;
+    }
+  }
+  if (respondidas === 0) return { cls:'obj-badge-nd', txt:'Sin evaluar' };
+  var pct = Math.round(((si + parcial*0.5) / n) * 100);
+  if (pct >= 80) return { cls:'obj-badge-ok', txt:'\u2705 '+pct+'%' };
+  if (pct >= 50) return { cls:'obj-badge-warn', txt:'\u26a0\ufe0f '+pct+'%' };
+  return { cls:'obj-badge-bad', txt:'\u274c '+pct+'%' };
+}
+
+function updateObjBadge(cod) {
+  var badge = document.getElementById('badge-'+cod);
+  if (!badge) return;
+  var r = calcObjBadge(cod);
+  badge.className = 'obj-badge '+r.cls;
+  badge.textContent = r.txt;
+  updateGlobalProgress();
+}
+
+function toggleObjCard(cod) {
+  var body = document.getElementById('body-'+cod);
+  if (!body) return;
+  body.classList.toggle('open');
+}
+
+function filtrarDominio(dom, btn) {
+  document.querySelectorAll('.dom-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.obj-card').forEach(function(card){
+    if (dom === 'TODOS' || card.dataset.dom === dom) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function initFormulariosCOBIT() {
+  var container = document.getElementById('objCardsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  OBJETIVOS.forEach(function(obj) {
+    var form = COBIT_FORMS[obj.cod];
+    if (!form) return;
+    var card = document.createElement('div');
+    card.className = 'obj-card dom-'+obj.dom;
+    card.dataset.dom = obj.dom;
+    var qRows = '';
+    form.preguntas.forEach(function(p, i) {
+      qRows += '<tr>' +
+        '<td style="width:30px;text-align:center;">'+(i+1)+'</td>' +
+        '<td>'+p+'</td>' +
+        '<td style="width:110px;">' +
+          '<select id="form-'+obj.cod+'-q'+i+'" onchange="updateObjBadge(\''+obj.cod+'\')" style="width:100%;">' +
+            '<option value="">\u2014</option>' +
+            '<option value="Si">\u2705 S\u00ed</option>' +
+            '<option value="Parcial">\u26a0\ufe0f Parcial</option>' +
+            '<option value="No">\u274c No</option>' +
+            '<option value="NA">N.A.</option>' +
+          '</select>' +
+        '</td>' +
+        '<td><input type="text" id="form-'+obj.cod+'-obs'+i+'" placeholder="Observaci\u00f3n..." style="width:100%;"></td>' +
+      '</tr>';
+    });
+    card.innerHTML =
+      '<div class="obj-card-header" onclick="toggleObjCard(\''+obj.cod+'\')">' +
+        '<span class="obj-code code-'+obj.dom+'">'+obj.cod+'</span>' +
+        '<span class="obj-title">'+obj.nom+'</span>' +
+        '<span class="obj-badge obj-badge-nd" id="badge-'+obj.cod+'">Sin evaluar</span>' +
+        '<span style="color:var(--text-light);font-size:0.8rem;">\u25bc</span>' +
+      '</div>' +
+      '<div class="obj-card-body" id="body-'+obj.cod+'">' +
+        '<div class="table-wrapper" style="margin-top:12px;">' +
+          '<table>' +
+            '<thead><tr><th>N\u00b0</th><th>Pregunta de evaluaci\u00f3n</th><th style="width:110px;">Cumplimiento</th><th>Observaci\u00f3n</th></tr></thead>' +
+            '<tbody>'+qRows+'</tbody>' +
+          '</table>' +
+        '</div>' +
+        '<div class="obj-footer">' +
+          '<div class="form-group">' +
+            '<label>Nivel de capacidad evidenciado</label>' +
+            '<select id="form-'+obj.cod+'-nivel" onchange="updateObjBadge(\''+obj.cod+'\')" style="width:160px;">' +
+              '<option value="">\u2014</option>' +
+              '<option value="0">0 \u2013 Incompleto</option>' +
+              '<option value="1">1 \u2013 Realizado</option>' +
+              '<option value="2">2 \u2013 Gestionado</option>' +
+              '<option value="3">3 \u2013 Definido</option>' +
+              '<option value="4">4 \u2013 Medible</option>' +
+              '<option value="5">5 \u2013 Optimizado</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="form-group" style="flex:2;">' +
+            '<label>Conclusi\u00f3n del objetivo</label>' +
+            '<textarea id="form-'+obj.cod+'-concl" rows="2" placeholder="Resumen de hallazgos y recomendaciones para '+obj.cod+'..." style="width:100%;"></textarea>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    container.appendChild(card);
+  });
+}
+
+</script>
+</body>
+</html>
