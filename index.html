@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auditoría COBIT 2019 — Premium</title>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 /* ============================================================
    CSS CUSTOM PROPERTIES — LIGHT / DARK MODE
@@ -1882,56 +1882,233 @@ function imprimirAuditoria() {
 }
 
 /* ============================================================
-   EXCEL EXPORT
+   EXCEL EXPORT — con ExcelJS (bordes, colores, bandas, freeze panes)
    ============================================================ */
-function exportarExcelVacio() {
-  if (typeof XLSX === 'undefined') { showToast('❌ SheetJS no disponible', 'error'); return; }
-  const wb = XLSX.utils.book_new();
-  const headers = ['Código','Dominio','Objetivo','Auditor','Fecha','Nivel actual','Nivel meta','Brecha','Resultado','Ref. evidencia','Descripción','Hallazgos','Recomendación'];
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...OBJETIVOS.map(o => [o.cod, o.dom, o.nombre,'','','','','','','','','',''])]);
-  XLSX.utils.book_append_sheet(wb, ws, 'COBIT_2019');
-  XLSX.writeFile(wb, 'Auditoria_COBIT2019_Plantilla.xlsx');
-  showToast('📄 Plantilla Excel descargada', 'success');
+const XL = {
+  titleBg:  { argb: 'FF1A5276' },
+  titleFg:  { argb: 'FFFFFFFF' },
+  headerBg: { argb: 'FF2980B9' },
+  headerFg: { argb: 'FFFFFFFF' },
+  bandBg:   { argb: 'FFEAF2F8' },
+  whiteBg:  { argb: 'FFFFFFFF' },
+  border:   { argb: 'FFB0BEC5' },
+  borderAll: { style: 'thin', color: { argb: 'FFB0BEC5' } },
+  domColors: { EDM: 'FF6C3483', APO: 'FF1A5276', BAI: 'FF0E6655', DSS: 'FF784212', MEA: 'FF1B4F72' },
+};
+
+function xlBorder() {
+  return { top: XL.borderAll, left: XL.borderAll, bottom: XL.borderAll, right: XL.borderAll };
 }
-function exportarExcelLleno() {
-  if (typeof XLSX === 'undefined') { showToast('❌ SheetJS no disponible', 'error'); return; }
-  const wb = XLSX.utils.book_new();
-  const headers = ['Código','Dominio','Objetivo','Auditor','Fecha','Nivel actual','Nivel meta','Brecha','Resultado','Ref. evidencia','Descripción','Hallazgos','Recomendación'];
+
+// Descarga un workbook ExcelJS como .xlsx
+async function xlDownload(wb, filename) {
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+}
+
+// Agrega una hoja con estilo profesional: título, encabezado con relleno,
+// todas las celdas con borde, bandas alternadas, freeze panes y autofiltro.
+function xlAddSheet(wb, name, title, headers, rows, colWidths, opts = {}) {
+  const ws = wb.addWorksheet(name, {
+    views: [{ state: 'frozen', ySplit: opts.titleRow === false ? 1 : 3 }]
+  });
+  const nCols = headers.length;
+  let startRow = 1;
+
+  // Fila de título (merge + relleno)
+  if (opts.titleRow !== false) {
+    ws.mergeCells(1, 1, 1, nCols);
+    const tCell = ws.getCell(1, 1);
+    tCell.value = title;
+    tCell.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+    tCell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.titleBg };
+    tCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    tCell.border = xlBorder();
+    ws.getRow(1).height = 28;
+    // Fila 2 vacía con borde (separación)
+    for (let c = 1; c <= nCols; c++) {
+      const sep = ws.getCell(2, c);
+      sep.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF4F6F9' } };
+      sep.border = xlBorder();
+    }
+    startRow = 3;
+  }
+
+  // Encabezados
+  const hRow = ws.getRow(startRow);
+  headers.forEach((h, i) => {
+    const cell = hRow.getCell(i + 1);
+    cell.value = h;
+    cell.font = { bold: true, size: 10, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.headerBg };
+    cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+    cell.border = xlBorder();
+  });
+  hRow.height = 30;
+
+  // Datos con bordes y bandas
+  rows.forEach((r, ri) => {
+    const row = ws.getRow(startRow + 1 + ri);
+    r.forEach((v, ci) => {
+      const cell = row.getCell(ci + 1);
+      cell.value = v !== '' && v !== null && v !== undefined ? v : (v === 0 ? 0 : '');
+      cell.border = xlBorder();
+      cell.font = { size: 10 };
+      cell.alignment = { vertical: 'middle', wrapText: true, horizontal: ci === 0 ? 'center' : 'left' };
+      // Banda alternada
+      if (ri % 2 === 1) {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.bandBg };
+      } else {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.whiteBg };
+      }
+      // Color por dominio en la columna código
+      if (opts.domCol === ci && typeof v === 'string' && XL.domColors[v]) {
+        cell.font = { size: 10, bold: true, color: { argb: XL.domColors[v] } };
+      }
+    });
+  });
+
+  // Anchos de columna
+  colWidths.forEach((w, i) => { ws.getColumn(i + 1).width = w; });
+
+  // Autofiltro
+  if (rows.length > 0) {
+    ws.autoFilter = {
+      from: { row: startRow, column: 1 },
+      to: { row: startRow + rows.length, column: nCols }
+    };
+  }
+  return ws;
+}
+
+function xlHeaders() {
+  return ['Código','Dominio','Objetivo','Auditor','Fecha','Nivel actual','Nivel meta','Brecha','Resultado','Ref. evidencia','Descripción','Hallazgos','Recomendación'];
+}
+function xlWidths() {
+  return [10, 9, 42, 18, 12, 12, 12, 10, 13, 14, 34, 34, 34];
+}
+
+async function exportarExcelVacio() {
+  if (typeof ExcelJS === 'undefined') { showToast('❌ ExcelJS no disponible', 'error'); return; }
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'GRUPO 3 · COBIT 2019';
+  // Hoja portada de la plantilla
+  const wsP = wb.addWorksheet('Portada');
+  wsP.mergeCells(1, 1, 1, 2);
+  const tp = wsP.getCell(1, 1);
+  tp.value = 'PLANTILLA DE AUDITORÍA — COBIT 2019 · GRUPO 3';
+  tp.font = { bold: true, size: 13, color: { argb: 'FFFFFFFF' } };
+  tp.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.titleBg };
+  tp.alignment = { horizontal: 'center', vertical: 'middle' };
+  tp.border = xlBorder();
+  wsP.getRow(1).height = 30;
+  const campos = [
+    ['Campo', 'Valor'],
+    ['Entidad auditada', ''], ['Unidad / área auditada', ''], ['Período evaluado', ''],
+    ['Auditor líder', ''], ['Equipo auditor', ''], ['Fecha de inicio', ''],
+    ['Fecha de cierre', ''], ['Objetivo de la auditoría', ''],
+  ];
+  campos.forEach((r, ri) => {
+    r.forEach((v, ci) => {
+      const cell = wsP.getCell(ri + 3, ci + 1);
+      cell.value = v; cell.border = xlBorder(); cell.alignment = { vertical: 'middle', wrapText: true };
+      if (ri === 0) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.headerBg };
+        cell.alignment = { horizontal: 'center' };
+      } else if (ci === 0) { cell.font = { bold: true, size: 10 }; }
+      else { cell.font = { size: 10 }; }
+    });
+  });
+  wsP.getColumn(1).width = 30; wsP.getColumn(2).width = 55;
+
+  // Hoja de los 40 objetivos (vacía, lista para llenar)
+  const rows = OBJETIVOS.map(o => [o.cod, o.dom, o.nombre, '', '', '', '', '', '', '', '', '', '']);
+  xlAddSheet(wb, 'COBIT_2019', 'OBJETIVOS DE GOBIERNO Y GESTIÓN — 40 OBJETIVOS COBIT 2019',
+    xlHeaders(), rows, xlWidths(), { domCol: 0 });
+
+  await xlDownload(wb, 'Auditoria_COBIT2019_Plantilla.xlsx');
+  showToast('📄 Plantilla descargada con formato y bordes', 'success');
+}
+
+async function exportarExcelLleno() {
+  if (typeof ExcelJS === 'undefined') { showToast('❌ ExcelJS no disponible', 'error'); return; }
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'GRUPO 3 · COBIT 2019';
+
+  // ===== Hoja Portada =====
+  const wsP = wb.addWorksheet('Portada');
+  wsP.mergeCells(1, 1, 1, 2);
+  const tp = wsP.getCell(1, 1);
+  tp.value = 'AUDITORÍA DE GOBIERNO Y GESTIÓN DE I&T — COBIT 2019';
+  tp.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+  tp.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.titleBg };
+  tp.alignment = { horizontal: 'center', vertical: 'middle' };
+  tp.border = xlBorder();
+  wsP.getRow(1).height = 32;
+  // Integrantes
+  wsP.mergeCells(2, 1, 2, 2);
+  const tg = wsP.getCell(2, 1);
+  tg.value = 'GRUPO 3 · Equipo de Auditoría';
+  tg.font = { bold: true, size: 11, color: { argb: 'FF1A5276' } };
+  tg.alignment = { horizontal: 'center' };
+  const portada = [
+    ['Campo', 'Valor'],
+    ['Entidad auditada',   document.getElementById('p_entidad')?.value || ''],
+    ['Unidad / área',      document.getElementById('p_area')?.value || ''],
+    ['Período evaluado',   document.getElementById('p_periodo')?.value || ''],
+    ['Auditor líder',      document.getElementById('p_auditor')?.value || ''],
+    ['Equipo auditor',     document.getElementById('p_equipo')?.value || ''],
+    ['Fecha de inicio',     document.getElementById('p_fecha_ini')?.value || ''],
+    ['Fecha de cierre',    document.getElementById('p_fecha_fin')?.value || ''],
+    ['Objetivo',           document.getElementById('p_objetivo')?.value || ''],
+    ['Opinión',            document.getElementById('i_opinion')?.value || ''],
+    ['Firma',              document.getElementById('i_firma')?.value || ''],
+  ];
+  portada.forEach((r, ri) => {
+    r.forEach((v, ci) => {
+      const cell = wsP.getCell(ri + 4, ci + 1);
+      cell.value = v; cell.border = xlBorder();
+      cell.alignment = { vertical: 'middle', wrapText: true };
+      if (ri === 0) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.headerBg };
+        cell.alignment = { horizontal: 'center' };
+      } else if (ci === 0) { cell.font = { bold: true, size: 10 }; }
+      else { cell.font = { size: 10 }; }
+      if (ri % 2 === 0 && ri > 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: XL.bandBg };
+    });
+  });
+  wsP.getColumn(1).width = 30; wsP.getColumn(2).width = 60;
+
+  // ===== Hoja 40 objetivos =====
   const rows = OBJETIVOS.map(o => {
     const c = o.cod.toLowerCase();
     const nivel = document.getElementById(c+'_nivel')?.value || '';
-    const meta = document.getElementById(c+'_meta')?.value || '';
+    const meta  = document.getElementById(c+'_meta')?.value || '';
     const brecha = (nivel !== '' && meta !== '') ? (parseInt(meta) - parseInt(nivel)) : '';
     return [
       o.cod, o.dom, o.nombre,
-      document.getElementById(c+'_auditor')?.value || '',
-      document.getElementById(c+'_fecha')?.value || '',
+      document.getElementById(c+'_auditor')?.value  || '',
+      document.getElementById(c+'_fecha')?.value    || '',
       nivel, meta, brecha,
       document.getElementById(c+'_resultado')?.value || '',
       document.getElementById(c+'_evidencia')?.value || '',
-      document.getElementById(c+'_desc')?.value || '',
-      document.getElementById(c+'_hallazgo')?.value || '',
-      document.getElementById(c+'_recom')?.value || '',
+      document.getElementById(c+'_desc')?.value      || '',
+      document.getElementById(c+'_hallazgo')?.value  || '',
+      document.getElementById(c+'_recom')?.value     || '',
     ];
   });
-  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  ws['!cols'] = headers.map((_, i) => ({ wch: i === 2 ? 40 : 20 }));
-  XLSX.utils.book_append_sheet(wb, ws, 'Objetivos');
-  // Portada sheet
-  const portadaData = [
-    ['Campo', 'Valor'],
-    ['Entidad auditada', document.getElementById('p_entidad')?.value || ''],
-    ['Área auditada', document.getElementById('p_area')?.value || ''],
-    ['Período evaluado', document.getElementById('p_periodo')?.value || ''],
-    ['Auditor líder', document.getElementById('p_auditor')?.value || ''],
-    ['Equipo auditor', document.getElementById('p_equipo')?.value || ''],
-    ['Fecha inicio', document.getElementById('p_fecha_ini')?.value || ''],
-    ['Fecha cierre', document.getElementById('p_fecha_fin')?.value || ''],
-    ['Objetivo', document.getElementById('p_objetivo')?.value || ''],
-  ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(portadaData), 'Portada');
-  XLSX.writeFile(wb, 'Auditoria_COBIT2019_Completa.xlsx');
-  showToast('⬇️ Excel exportado correctamente', 'success');
+  xlAddSheet(wb, 'Objetivos', 'EVALUACIÓN DE LOS 40 OBJETIVOS COBIT 2019',
+    xlHeaders(), rows, xlWidths(), { domCol: 0 });
+
+  await xlDownload(wb, 'Auditoria_COBIT2019_Completa.xlsx');
+  showToast('⬇️ Excel exportado con formato profesional', 'success');
 }
 
 /* ============================================================
