@@ -547,35 +547,35 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content active" id="tab-portada" role="tabpanel">
   <div class="card">
-    <h2><span class="step">1</span> <span data-i18n="f_entidad">Datos de la Auditoría</span></h2>
-    <p class="subtitle">Complete la información general. Los campos con <b>*</b> son obligatorios.</p>
+    <h2><span class="step">1</span> <span id="h2-portada">Datos de la Auditoría</span></h2>
+    <p class="subtitle" id="sub-portada">Complete la información general. Los campos con * son obligatorios.</p>
     <div class="form-grid">
       <div class="form-group">
-        <label class="tip-wrap"><span data-i18n="f_entidad">Entidad auditada</span> *<span class="tip-icon">ℹ️</span><span class="tip">Nombre legal completo de la organización auditada</span></label>
+        <label id="lbl-p_entidad" class="tip-wrap">Entidad auditada *<span class="tip-icon">ℹ️</span><span class="tip">Nombre legal completo de la organización auditada</span></label>
         <input type="text" id="p_entidad" placeholder="Empresa Ejemplo S.A." oninput="scheduleAutoSave();validateField(this)">
       </div>
       <div class="form-group">
-        <label><span data-i18n="f_area">Unidad / área auditada</span> *</label>
+        <label id="lbl-p_area">Unidad / área auditada *</label>
         <input type="text" id="p_area" placeholder="Gerencia de Tecnología" oninput="scheduleAutoSave();validateField(this)">
       </div>
       <div class="form-group">
-        <label><span data-i18n="f_periodo">Período evaluado</span> *</label>
+        <label id="lbl-p_periodo">Período evaluado *</label>
         <input type="text" id="p_periodo" placeholder="01/01/2026 - 30/09/2026" oninput="scheduleAutoSave();validateField(this)">
       </div>
       <div class="form-group">
-        <label><span data-i18n="f_auditor">Auditor líder</span> *</label>
+        <label id="lbl-p_auditor">Auditor líder *</label>
         <input type="text" id="p_auditor" placeholder="Nombre Apellido" oninput="scheduleAutoSave();validateField(this)">
       </div>
       <div class="form-group">
-        <label><span data-i18n="f_equipo">Equipo auditor</span></label>
+        <label id="lbl-p_equipo">Equipo auditor</label>
         <input type="text" id="p_equipo" placeholder="Auditor 1, Auditor 2" oninput="scheduleAutoSave()">
       </div>
       <div class="form-group">
-        <label><span data-i18n="f_fecha_ini">Fecha de inicio</span></label>
+        <label id="lbl-p_fecha_ini">Fecha de inicio</label>
         <input type="date" id="p_fecha_ini" onchange="scheduleAutoSave()">
       </div>
       <div class="form-group">
-        <label><span data-i18n="f_fecha_fin">Fecha de cierre</span></label>
+        <label id="lbl-p_fecha_fin">Fecha de cierre</label>
         <input type="date" id="p_fecha_fin" onchange="scheduleAutoSave()">
       </div>
       <div class="form-group">
@@ -587,7 +587,7 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
         <input type="text" value="COBIT 2019 (ISACA)" readonly style="background:var(--thead-bg);">
       </div>
       <div class="form-group full">
-        <label><span data-i18n="f_objetivo">Objetivo de la auditoría</span></label>
+        <label id="lbl-p_objetivo">Objetivo de la auditoría</label>
         <textarea id="p_objetivo" rows="2" oninput="scheduleAutoSave()">Evaluar el nivel de capacidad de los 40 objetivos de gobierno y gestión de I&T conforme a COBIT 2019.</textarea>
       </div>
     </div>
@@ -599,16 +599,16 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-contexto" role="tabpanel">
   <div class="card">
-    <h2><span class="step">2</span> Contexto de la Entidad</h2>
-    <p class="subtitle">Entendimiento del negocio antes de aplicar los factores de diseño.</p>
+    <h2><span class="step">2</span> <span id="h2-contexto"></span>Contexto de la Entidad</span></h2>
+    <p class="subtitle" id="sub-contexto">Entendimiento del negocio antes de aplicar los factores de diseño.</p>
     <div class="form-grid">
-      <div class="form-group"><label>Misión / visión</label><textarea id="c_mision" rows="2" placeholder="Misión y visión de la organización..." oninput="scheduleAutoSave()"></textarea></div>
-      <div class="form-group"><label>Estrategia del negocio</label><textarea id="c_estrategia" rows="2" placeholder="Crecimiento, innovación, eficiencia..." oninput="scheduleAutoSave()"></textarea></div>
-      <div class="form-group"><label>Estructura organizacional (TI)</label><textarea id="c_estructura" rows="2" placeholder="Organigrama, comités, dependencias..." oninput="scheduleAutoSave()"></textarea></div>
-      <div class="form-group"><label>Principales procesos de negocio</label><textarea id="c_procesos" rows="2" placeholder="Procesos core y sistemas de soporte..." oninput="scheduleAutoSave()"></textarea></div>
-      <div class="form-group"><label>Marco regulatorio aplicable</label><textarea id="c_regulatorio" rows="2" placeholder="Leyes, normas sectoriales, protección de datos..." oninput="scheduleAutoSave()"></textarea></div>
-      <div class="form-group"><label>Historial de auditorías previas</label><textarea id="c_historial" rows="2" placeholder="Hallazgos abiertos, auditorías anteriores..." oninput="scheduleAutoSave()"></textarea></div>
-      <div class="form-group"><label>Madurez percibida de I&T</label>
+      <div class="form-group"><label id="lbl-c_mision">Misión / visión</label><textarea id="c_mision" rows="2" placeholder="Misión y visión de la organización..." oninput="scheduleAutoSave()"></textarea></div>
+      <div class="form-group"><label id="lbl-c_estrategia">Estrategia del negocio</label><textarea id="c_estrategia" rows="2" placeholder="Crecimiento, innovación, eficiencia..." oninput="scheduleAutoSave()"></textarea></div>
+      <div class="form-group"><label id="lbl-c_estructura">Estructura organizacional (TI)</label><textarea id="c_estructura" rows="2" placeholder="Organigrama, comités, dependencias..." oninput="scheduleAutoSave()"></textarea></div>
+      <div class="form-group"><label id="lbl-c_procesos">Principales procesos de negocio</label><textarea id="c_procesos" rows="2" placeholder="Procesos core y sistemas de soporte..." oninput="scheduleAutoSave()"></textarea></div>
+      <div class="form-group"><label id="lbl-c_regulatorio">Marco regulatorio aplicable</label><textarea id="c_regulatorio" rows="2" placeholder="Leyes, normas sectoriales, protección de datos..." oninput="scheduleAutoSave()"></textarea></div>
+      <div class="form-group"><label id="lbl-c_historial">Historial de auditorías previas</label><textarea id="c_historial" rows="2" placeholder="Hallazgos abiertos, auditorías anteriores..." oninput="scheduleAutoSave()"></textarea></div>
+      <div class="form-group"><label id="lbl-c_madurez">Madurez percibida de I&T</label>
         <select id="c_madurez" onchange="scheduleAutoSave()"><option value="">Seleccione...</option><option>Baja</option><option>Media</option><option>Alta</option></select>
       </div>
     </div>
@@ -620,8 +620,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-escalas" role="tabpanel">
   <div class="card">
-    <h2><span class="step">3</span> Escalas de Referencia</h2>
-    <p class="subtitle">Modelo de capacidad COBIT 2019 (niveles 0-5).</p>
+    <h2><span class="step">3</span> <span id="h2-escalas"></span>Escalas de Referencia</span></h2>
+    <p class="subtitle" id="sub-escalas">Modelo de capacidad COBIT 2019 (niveles 0-5).</p>
     <div class="table-wrapper"><table><thead><tr><th>Nivel</th><th>Nombre</th><th>Descripción</th></tr></thead>
     <tbody>
       <tr><td><b>0</b></td><td><span data-i18n="esc_incompleto">Incompleto</span></td><td>El proceso no está implementado o no logra su propósito.</td></tr>
@@ -639,7 +639,7 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-factores" role="tabpanel">
   <div class="card">
-    <h2><span class="step">4</span> Factores de Diseño COBIT 2019</h2>
+    <h2><span class="step">4</span> <span id="h2-factores"></span>Factores de Diseño COBIT 2019</span></h2>
     <p class="subtitle">Valore cada factor (Bajo/Medio/Alto). Determinan las prioridades del sistema de gobierno.</p>
     <div class="table-wrapper"><table id="tablaFactores">
       <thead><tr><th>N°</th><th>Factor de diseño</th><th>Qué evaluar</th><th>Valoración *</th><th>Peso (1-5)</th><th>Puntaje</th><th>Observaciones</th></tr></thead>
@@ -657,7 +657,7 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-alcance" role="tabpanel">
   <div class="card">
-    <h2><span class="step">5</span> Alcance: 40 Objetivos COBIT 2019</h2>
+    <h2><span class="step">5</span> <span id="h2-alcance"></span>Alcance: 40 Objetivos COBIT 2019</span></h2>
     <p class="subtitle">Defina prioridad, inclusión y justificación para cada objetivo.</p>
     <div class="table-wrapper"><table id="tablaAlcance">
       <thead><tr><th data-i18n="col_codigo">Código</th><th data-i18n="col_dominio">Dominio</th><th data-i18n="col_objetivo">Objetivo</th><th>Prioridad</th><th>En alcance</th><th>Nivel meta</th><th>Justificación *</th></tr></thead>
@@ -958,8 +958,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-riesgos" role="tabpanel">
   <div class="card">
-    <h2><span class="step">R</span> Matriz de Riesgos de TI</h2>
-    <p class="subtitle">Identifique y evalúe los principales riesgos asociados al alcance de la auditoría.</p>
+    <h2><span class="step">R</span> <span id="h2-riesgos">Matriz de Riesgos de TI</span></h2>
+    <p class="subtitle" id="sub-riesgos">Riesgos propios del trabajo de auditoría. Documente y mitigue.</p>
     <div class="table-wrapper"><table id="tablaRiesgos">
       <thead><tr><th>#</th><th>Descripción del riesgo</th><th>Proceso COBIT</th><th>Probabilidad</th><th>Impacto</th><th>Nivel de riesgo</th><th>Control existente</th><th>Riesgo residual</th></tr></thead>
       <tbody id="riesgosBody"></tbody>
@@ -972,8 +972,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-evidencias" role="tabpanel">
   <div class="card">
-    <h2><span class="step">E</span> Registro de Evidencias</h2>
-    <p class="subtitle">Documente todas las evidencias recopiladas durante la auditoría.</p>
+    <h2><span class="step">E</span> <span id="h2-evidencias"></span>Registro de Evidencias</span></h2>
+    <p class="subtitle" id="sub-evidencias">Documente todas las evidencias recopiladas durante la auditoría.</p>
     <div class="table-wrapper"><table id="tablaEvidencias">
       <thead><tr><th>Ref.</th><th>Descripción</th><th>Tipo</th><th>Proceso COBIT</th><th>Fecha obtención</label></th><th>Obtenido por</th><th>Almacenamiento</th><th>Estado</th></tr></thead>
       <tbody id="evidenciasBody"></tbody>
@@ -986,8 +986,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-programa" role="tabpanel">
   <div class="card">
-    <h2><span class="step">P</span> Programa de Auditoría</h2>
-    <p class="subtitle">Planifique las actividades de auditoría, responsables y fechas.</p>
+    <h2><span class="step">P</span> <span id="h2-programa"></span>Programa de Auditoría</span></h2>
+    <p class="subtitle" id="sub-programa">Planifique las actividades de auditoría, responsables y fechas.</p>
     <div class="table-wrapper"><table id="tablaPrograma">
       <thead><tr><th>#</th><th>Actividad</th><th>Proceso COBIT</th><th>Técnica</th><th>Responsable</th><th>Fecha inicio</th><th>Fecha fin</th><th>Estado</th><th>Observaciones</th></tr></thead>
       <tbody id="programaBody"></tbody>
@@ -1000,8 +1000,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-muestreo" role="tabpanel">
   <div class="card">
-    <h2><span class="step">M</span> Plan de Muestreo</h2>
-    <p class="subtitle">Defina la metodología y tamaño de muestra para las pruebas de auditoría.</p>
+    <h2><span class="step">M</span> <span id="h2-muestreo"></span>Plan de Muestreo</span></h2>
+    <p class="subtitle" id="sub-muestreo">Defina la metodología y tamaño de muestra para las pruebas de auditoría.</p>
     <div class="form-grid">
       <div class="form-group"><label>Metodología de muestreo</label><select id="m_metodologia" onchange="scheduleAutoSave()"><option value="">Seleccione...</option><option>Muestreo aleatorio simple</option><option>Muestreo sistemático</option><option>Muestreo por conglomerados</option><option>Muestreo de juicio</option><option>Muestreo de atributos</option></select></div>
       <div class="form-group"><label>Nivel de confianza</label><select id="m_confianza" onchange="scheduleAutoSave()"><option value="">—</option><option>90%</option><option>95%</option><option>99%</option></select></div>
@@ -1022,8 +1022,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-capacidad" role="tabpanel">
   <div class="card">
-    <h2><span class="step">C</span> Resumen de Niveles de Capacidad</h2>
-    <p class="subtitle">Vista consolidada de niveles actuales y metas por los 40 objetivos.</p>
+    <h2><span class="step">C</span> <span id="h2-capacidad"></span>Resumen de Niveles de Capacidad</span></h2>
+    <p class="subtitle" id="sub-capacidad">Vista consolidada de niveles actuales y metas por los 40 objetivos.</p>
     <div class="table-wrapper"><table id="tablaCapacidad">
       <thead><tr><th>Código</th><th>Dominio</th><th>Objetivo</th><th>Nivel actual</th><th>Nivel meta</th><th>Brecha</th><th>Resultado</th></tr></thead>
       <tbody id="capacidadBody"></tbody>
@@ -1036,8 +1036,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-hallazgos" role="tabpanel">
   <div class="card">
-    <h2><span class="step">H</span> Cédula de Hallazgos</h2>
-    <p class="subtitle">Documente en detalle los hallazgos identificados durante la auditoría.</p>
+    <h2><span class="step">H</span> <span id="h2-hallazgos"></span>Cédula de Hallazgos</span></h2>
+    <p class="subtitle" id="sub-hallazgos">Documente en detalle los hallazgos identificados durante la auditoría.</p>
     <div class="table-wrapper"><table id="tablaHallazgos">
       <thead><tr><th>#</th><th>Proceso COBIT</th><th>Título del hallazgo</th><th>Condición</th><th>Criterio</th><th>Causa</th><th>Efecto/Impacto</th><th>Responsable</th></tr></thead>
       <tbody id="hallazgosBody"></tbody>
@@ -1050,8 +1050,8 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-plan" role="tabpanel">
   <div class="card">
-    <h2><span class="step">A</span> Plan de Acción / Seguimiento</h2>
-    <p class="subtitle">Acciones correctivas acordadas con la entidad para subsanar los hallazgos.</p>
+    <h2><span class="step">A</span> <span id="h2-plan"></span>Plan de Acción / Seguimiento</span></h2>
+    <p class="subtitle" id="sub-plan">Acciones correctivas acordadas con la entidad para subsanar los hallazgos.</p>
     <div class="table-wrapper"><table id="tablaPlan">
       <thead><tr><th>#</th><th>Hallazgo ref.</th><th>Acción correctiva</th><th>Responsable</th><th>Fecha compromiso</th><th>Avance %</th><th>Estado</th><th>Evidencia cierre</th></tr></thead>
       <tbody id="planBody"></tbody>
@@ -1084,10 +1084,10 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
      ============================================================ -->
 <div class="tab-content" id="tab-informe" role="tabpanel">
   <div class="card">
-    <h2><span class="step">📝</span> Informe de Auditoría</h2>
-    <p class="subtitle">Informe ejecutivo de los resultados de la auditoría COBIT 2019.</p>
+    <h2><span class="step">📝</span> <span id="h2-informe">Informe de Auditoría</span></h2>
+    <p class="subtitle" id="sub-informe">Informe ejecutivo de los resultados de la auditoría COBIT 2019.</p>
     <div class="form-grid">
-      <div class="form-group full"><label>Opinión del auditor</label>
+      <div class="form-group full"><label id="lbl-inf_opinion">Opinión del auditor</label>
         <select id="inf_opinion" onchange="scheduleAutoSave()">
           <option value="">Seleccione...</option>
           <option>Sin salvedades — el sistema de gobierno y gestión de I&T es adecuado</option>
@@ -1096,17 +1096,17 @@ mark.search-hl { background: var(--highlight); color: inherit; border-radius: 2p
           <option>Abstención de opinión — alcance limitado</option>
         </select>
       </div>
-      <div class="form-group full"><label>Conclusiones generales</label>
-        <textarea id="inf_conclusiones" rows="4" placeholder="Resuma los hallazgos más relevantes y la situación general del gobierno de TI..." oninput="scheduleAutoSave()"></textarea>
+      <div class="form-group full"><label id="lbl-inf_conclusiones">Conclusiones generales</label>
+        <textarea id="inf_conclusiones" rows="4" placeholder="Resuma los hallazgos más relevantes..." oninput="scheduleAutoSave()"></textarea>
       </div>
-      <div class="form-group full"><label>Limitaciones al alcance</label>
+      <div class="form-group full"><label id="lbl-inf_limitaciones">Limitaciones al alcance</label>
         <textarea id="inf_limitaciones" rows="2" placeholder="Indique cualquier limitación o restricción al alcance de la auditoría..." oninput="scheduleAutoSave()"></textarea>
       </div>
-      <div class="form-group full"><label>Recomendaciones prioritarias</label>
+      <div class="form-group full"><label id="lbl-inf_recomendaciones">Recomendaciones prioritarias</label>
         <textarea id="inf_recomendaciones" rows="4" placeholder="Liste las recomendaciones más importantes en orden de prioridad..." oninput="scheduleAutoSave()"></textarea>
       </div>
-      <div class="form-group"><label>Firma del auditor líder</label><input type="text" id="inf_firma" placeholder="Nombre y firma" oninput="scheduleAutoSave()"></div>
-      <div class="form-group"><label>Fecha del informe</label><input type="date" id="inf_fecha" onchange="scheduleAutoSave()"></div>
+      <div class="form-group"><label id="lbl-inf_firma">Firma del auditor líder</label><input type="text" id="inf_firma" placeholder="Nombre y firma" oninput="scheduleAutoSave()"></div>
+      <div class="form-group"><label id="lbl-inf_fecha">Fecha del informe</label><input type="date" id="inf_fecha" onchange="scheduleAutoSave()"></div>
     </div>
   </div>
 </div>
@@ -1315,21 +1315,212 @@ function toggleLang() {
   applyLang();
 }
 function applyLang() {
-  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
-  // Repintar botones de navegación prev/next con el idioma actual
+  const es = currentLang === 'es';
+
+  /* ---- 1. Elementos con data-i18n (tabs, header, kpis, etc.) ---- */
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (LANG[currentLang][key] !== undefined) el.textContent = LANG[currentLang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (LANG[currentLang][key] !== undefined) el.placeholder = LANG[currentLang][key];
+  });
+
+  /* ---- 2. Textos estáticos del HTML que NO tienen data-i18n ---- */
+  const TX = {
+    // Portada
+    'sub-portada':   es ? 'Complete la información general. Los campos con * son obligatorios.'
+                       : 'Fill in the general information. Fields marked with * are required.',
+    'h2-portada':    es ? 'Datos de la Auditoría' : 'Audit Data',
+    // Contexto
+    'h2-contexto':   es ? 'Contexto de la Entidad' : 'Entity Context',
+    'sub-contexto':  es ? 'Entendimiento del negocio antes de aplicar los factores de diseño.'
+                       : 'Business understanding before applying the design factors.',
+    // Escalas
+    'h2-escalas':    es ? 'Escalas de Referencia' : 'Reference Scales',
+    'sub-escalas':   es ? 'Modelo de capacidad COBIT 2019 (niveles 0-5).'
+                       : 'COBIT 2019 capability model (levels 0-5).',
+    // Factores
+    'h2-factores':   es ? 'Factores de Diseño COBIT 2019' : 'COBIT 2019 Design Factors',
+    'sub-factores':  es ? 'Valore cada factor (Bajo/Medio/Alto). Determinan las prioridades del sistema de gobierno.'
+                       : 'Rate each factor (Low/Medium/High). They determine governance system priorities.',
+    // Alcance
+    'h2-alcance':    es ? 'Alcance: 40 Objetivos COBIT 2019' : 'Scope: 40 COBIT 2019 Objectives',
+    'sub-alcance':   es ? 'Defina prioridad, inclusión y justificación para cada objetivo.'
+                       : 'Define priority, inclusion and justification for each objective.',
+    // Riesgos
+    'h2-riesgos':    es ? 'Riesgos de la Auditoría' : 'Audit Risks',
+    'sub-riesgos':   es ? 'Riesgos propios del trabajo de auditoría. Documente y mitigue.'
+                       : 'Risks inherent to the audit work. Document and mitigate.',
+    // Evidencias
+    'h2-evidencias': es ? 'Solicitud de Evidencias (PBC)' : 'Evidence Request (PBC)',
+    'sub-evidencias':es ? 'Registro de lo solicitado al auditado y estado de recepción.'
+                       : 'Log of items requested from the auditee and receipt status.',
+    // Programa
+    'h2-programa':   es ? 'Programa de Auditoría' : 'Audit Program',
+    'sub-programa':  es ? 'Un procedimiento por objetivo en alcance. Registre el resultado.'
+                       : 'One procedure per in-scope objective. Record the result.',
+    // Muestreo
+    'h2-muestreo':   es ? 'Muestreo y Pruebas' : 'Sampling and Testing',
+    'sub-muestreo':  es ? 'Defina población y muestra para sustentar los resultados.'
+                       : 'Define population and sample to support the results.',
+    // Capacidad
+    'h2-capacidad':  es ? 'Evaluación de Capacidad' : 'Capability Assessment',
+    'sub-capacidad': es ? 'Nivel actual (0-5) consolidado de los 40 objetivos.'
+                       : 'Current level (0-5) consolidated for the 40 objectives.',
+    // Hallazgos
+    'h2-hallazgos':  es ? 'Matriz de Hallazgos' : 'Findings Matrix',
+    'sub-hallazgos': es ? 'Riesgo = probabilidad × impacto. Complete los datos críticos.'
+                       : 'Risk = probability × impact. Complete the critical data.',
+    // Plan
+    'h2-plan':       es ? 'Plan de Acción' : 'Action Plan',
+    'sub-plan':      es ? 'Seguimiento con semáforo automático.'
+                       : 'Follow-up with automatic traffic light.',
+    // Resumen
+    'h2-resumen':    es ? 'Resumen Ejecutivo por Dominio' : 'Executive Summary by Domain',
+    'sub-resumen':   es ? 'Panel calculado automáticamente a partir de las evaluaciones individuales.'
+                       : 'Panel automatically calculated from individual assessments.',
+    // Informe
+    'h2-informe':    es ? 'Informe de Auditoría' : 'Audit Report',
+    'sub-informe':   es ? 'Informe ejecutivo de los resultados de la auditoría COBIT 2019.'
+                       : 'Executive report of the COBIT 2019 audit results.',
+    // Revisión
+    'h2-revision':   es ? 'Revisión Final — Todos los Formularios' : 'Final Review — All Forms',
+    'sub-revision':  es ? 'Consolidado de todos los formularios. Verifique antes de exportar.'
+                       : 'Consolidated view of all forms. Verify before exporting.',
+    // Factores subtitle
+    'sub-factores':  es ? 'Valore cada factor (Bajo/Medio/Alto). Determinan las prioridades del sistema de gobierno.'
+                       : 'Rate each factor (Low/Medium/High). They determine governance system priorities.',
+    // Alcance subtitle
+    'sub-alcance':   es ? 'Defina prioridad, inclusión y justificación para cada objetivo.'
+                       : 'Define priority, inclusion and justification for each objective.',
+    // Programa subtitle
+    'sub-programa':  es ? 'Planifique las actividades de auditoría, responsables y fechas.'
+                       : 'Plan audit activities, responsible parties and dates.',
+    // Muestreo subtitle
+    'sub-muestreo':  es ? 'Defina la metodología y tamaño de muestra para las pruebas de auditoría.'
+                       : 'Define the methodology and sample size for audit testing.',
+    // Capacidad
+    'h2-capacidad':  es ? 'Resumen de Niveles de Capacidad' : 'Capability Level Summary',
+    'sub-capacidad': es ? 'Vista consolidada de niveles actuales y metas por los 40 objetivos.'
+                       : 'Consolidated view of current and target levels for the 40 objectives.',
+    // Hallazgos
+    'h2-hallazgos':  es ? 'Cédula de Hallazgos' : 'Findings Register',
+    'sub-hallazgos': es ? 'Documente en detalle los hallazgos identificados durante la auditoría.'
+                       : 'Document in detail the findings identified during the audit.',
+    // Plan
+    'h2-plan':       es ? 'Plan de Acción / Seguimiento' : 'Action Plan / Follow-up',
+    'sub-plan':      es ? 'Acciones correctivas acordadas con la entidad para subsanar los hallazgos.'
+                       : 'Corrective actions agreed with the entity to address the findings.',
+    // Programa
+    'h2-programa':   es ? 'Programa de Auditoría' : 'Audit Program',
+    // Muestreo
+    'h2-muestreo':   es ? 'Plan de Muestreo' : 'Sampling Plan',
+    // Riesgos
+    'h2-riesgos':    es ? 'Matriz de Riesgos de TI' : 'IT Risk Matrix',
+    'sub-riesgos':   es ? 'Riesgos propios del trabajo de auditoría. Documente y mitigue.'
+                       : 'Risks inherent to the audit work. Document and mitigate.',
+    // Evidencias
+    'h2-evidencias': es ? 'Registro de Evidencias' : 'Evidence Register',
+    'sub-evidencias':es ? 'Documente todas las evidencias recopiladas durante la auditoría.'
+                       : 'Document all evidence collected during the audit.',
+  };
+  Object.entries(TX).forEach(([id, text]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+
+  /* ---- 3. Labels de formularios estáticos ---- */
+  const LABELS = {
+    // Portada
+    'lbl-p_entidad':  es ? 'Entidad auditada *'          : 'Audited entity *',
+    'lbl-p_area':     es ? 'Unidad / área auditada *'    : 'Unit / area audited *',
+    'lbl-p_periodo':  es ? 'Período evaluado *'           : 'Evaluation period *',
+    'lbl-p_auditor':  es ? 'Auditor líder *'             : 'Lead auditor *',
+    'lbl-p_equipo':   es ? 'Equipo auditor'              : 'Audit team',
+    'lbl-p_fecha_ini':es ? 'Fecha de inicio'             : 'Start date',
+    'lbl-p_fecha_fin':es ? 'Fecha de cierre'             : 'End date',
+    'lbl-p_objetivo': es ? 'Objetivo de la auditoría'    : 'Audit objective',
+    // Contexto
+    'lbl-c_mision':   es ? 'Misión / visión'             : 'Mission / vision',
+    'lbl-c_estrategia':es? 'Estrategia del negocio'      : 'Business strategy',
+    'lbl-c_estructura':es? 'Estructura organizacional'   : 'Organizational structure',
+    'lbl-c_procesos': es ? 'Principales procesos'        : 'Key business processes',
+    'lbl-c_regulatorio':es?'Marco regulatorio'           : 'Regulatory framework',
+    'lbl-c_historial':es ? 'Historial de auditorías'     : 'Audit history',
+    'lbl-c_madurez':  es ? 'Madurez percibida de I&T'    : 'Perceived IT maturity',
+    // Informe
+    'lbl-inf_opinion':     es ? 'Opinión del auditor'          : 'Auditor opinion',
+    'lbl-inf_conclusiones':es ? 'Conclusiones generales'       : 'General conclusions',
+    'lbl-inf_limitaciones':es ? 'Limitaciones al alcance'      : 'Scope limitations',
+    'lbl-inf_recomendaciones':es?'Recomendaciones prioritarias': 'Priority recommendations',
+    'lbl-inf_firma':       es ? 'Firma del auditor líder'      : 'Lead auditor signature',
+    'lbl-inf_fecha':       es ? 'Fecha del informe'            : 'Report date',
+  };
+  Object.entries(LABELS).forEach(([id, text]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+
+  /* ---- 4. Placeholders de inputs ---- */
+  const PH = {
+    'p_entidad':  es ? 'Empresa Ejemplo S.A.'       : 'Example Company Ltd.',
+    'p_area':     es ? 'Gerencia de Tecnología'      : 'Technology Management',
+    'p_periodo':  es ? '01/01/2026 - 30/09/2026'    : '01/01/2026 - 09/30/2026',
+    'p_auditor':  es ? 'Nombre Apellido'             : 'First Last Name',
+    'p_equipo':   es ? 'Auditor 1, Auditor 2'        : 'Auditor 1, Auditor 2',
+  };
+  Object.entries(PH).forEach(([id, ph]) => {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = ph;
+  });
+
+  /* ---- 5. Opciones del select de madurez y opinión ---- */
+  const madEl = document.getElementById('c_madurez');
+  if (madEl) {
+    const curVal = madEl.value;
+    madEl.innerHTML = es
+      ? '<option value="">Seleccione...</option><option>Baja</option><option>Media</option><option>Alta</option>'
+      : '<option value="">Select...</option><option>Low</option><option>Medium</option><option>High</option>';
+    madEl.value = curVal;
+  }
+  const opEl = document.getElementById('inf_opinion');
+  if (opEl) {
+    const curVal = opEl.value;
+    opEl.innerHTML = es
+      ? `<option value="">Seleccione...</option>
+         <option>Sin salvedades — el sistema de gobierno y gestión de I&T es adecuado</option>
+         <option>Con salvedades — existen deficiencias que requieren atención</option>
+         <option>Adversa — el sistema de gobierno y gestión de I&T presenta deficiencias significativas</option>
+         <option>Abstención de opinión — alcance limitado</option>`
+      : `<option value="">Select...</option>
+         <option>Unqualified — the IT governance and management system is adequate</option>
+         <option>Qualified — deficiencies exist that require attention</option>
+         <option>Adverse — the IT governance and management system has significant deficiencies</option>
+         <option>Disclaimer of opinion — scope limitation</option>`;
+    opEl.value = curVal;
+  }
+
+  /* ---- 6. Botones de navegación prev/next ---- */
   if (typeof updateNavButtonTexts === 'function') updateNavButtonTexts();
-  // Actualizar toggle de idioma en header
+
+  /* ---- 7. Toggle idioma ---- */
   const lt = document.getElementById('langToggle');
-  if (lt) lt.textContent = currentLang === 'es' ? '🌐 EN' : '🌐 ES';
-  // Si el tour está activo, repintarlo en el nuevo idioma
-  if (tourActive && tourIdx >= 0 && tourIdx < TOUR_STEPS.length) mostrarPasoTour(tourIdx);
-  document.getElementById('langToggle').textContent = currentLang === 'es' ? '🌐 EN' : '🌐 ES';
+  if (lt) lt.textContent = es ? '🌐 EN' : '🌐 ES';
+
+  /* ---- 8. Radar labels ---- */
   if (window.radarChart) {
-    window.radarChart.data.datasets[0].label = currentLang === 'es' ? 'Nivel actual' : 'Current level';
-    window.radarChart.data.datasets[1].label = currentLang === 'es' ? 'Nivel meta' : 'Target level';
+    window.radarChart.data.datasets[0].label = es ? 'Nivel actual' : 'Current level';
+    window.radarChart.data.datasets[1].label = es ? 'Nivel meta' : 'Target level';
     window.radarChart.update();
   }
+
+  /* ---- 9. Tour en curso ---- */
+  if (tourActive && tourIdx >= 0 && tourIdx < TOUR_STEPS.length) mostrarPasoTour(tourIdx);
+
+  /* ---- 10. html[lang] ---- */
+  document.documentElement.lang = currentLang;
 }
 
 /* ============================================================
