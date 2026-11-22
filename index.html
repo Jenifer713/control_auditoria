@@ -1317,8 +1317,11 @@ function toggleLang() {
 function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
-  // Actualizar botones inyectados de guardar/navegación
-  document.querySelectorAll('.btn-form-save').forEach(b => { if (!b.id.startsWith('x')) b.textContent = '💾 ' + t('btn_guardar_form'); });
+  // Repintar botones de navegación prev/next con el idioma actual
+  if (typeof updateNavButtonTexts === 'function') updateNavButtonTexts();
+  // Actualizar toggle de idioma en header
+  const lt = document.getElementById('langToggle');
+  if (lt) lt.textContent = currentLang === 'es' ? '🌐 EN' : '🌐 ES';
   // Si el tour está activo, repintarlo en el nuevo idioma
   if (tourActive && tourIdx >= 0 && tourIdx < TOUR_STEPS.length) mostrarPasoTour(tourIdx);
   document.getElementById('langToggle').textContent = currentLang === 'es' ? '🌐 EN' : '🌐 ES';
@@ -2239,34 +2242,76 @@ function goPrevTab() {
 
 // --- Inyecta botones (guardar / anterior / siguiente) en cada pestaña ---
 function injectFormButtons() {
-  // 1) Botón guardar al final del cuerpo de CADA objetivo
+  // 1) Botón guardar al final del cuerpo de CADA objetivo (40 formularios)
   document.querySelectorAll('.obj-body').forEach(body => {
     const cod = body.id.replace('-body', '');
     if (document.getElementById('btnsave-' + cod)) return;
     const wrap = document.createElement('div');
     wrap.className = 'form-actions';
-    wrap.innerHTML = `<button class="btn btn-form-save" id="btnsave-${cod}" onclick="guardarFormulario('${cod}')">💾 ${t('btn_guardar_form')}</button>`;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-form-save';
+    btn.id = 'btnsave-' + cod;
+    btn.setAttribute('data-i18n', 'btn_guardar_form');
+    btn.setAttribute('data-save-cod', cod);
+    btn.setAttribute('type', 'button');
+    btn.onclick = () => guardarFormulario(cod);
+    btn.textContent = '💾 Guardar formulario';
+    wrap.appendChild(btn);
     body.appendChild(wrap);
   });
+
   // 2) Barra guardar + anterior/siguiente al final de CADA pestaña
   TAB_ORDER.forEach(tabId => {
     const tabEl = document.getElementById('tab-' + tabId);
     if (!tabEl || document.getElementById('navbar-' + tabId)) return;
     const i = TAB_ORDER.indexOf(tabId);
-    const prev = i > 0 ? TAB_ORDER[i - 1] : null;
-    const next = i < TAB_ORDER.length - 1 ? TAB_ORDER[i + 1] : null;
+    const prevId = i > 0 ? TAB_ORDER[i - 1] : null;
+    const nextId = i < TAB_ORDER.length - 1 ? TAB_ORDER[i + 1] : null;
+    const isRevision = tabId === 'revision';
+
     const bar = document.createElement('div');
     bar.className = 'tab-form-bar';
     bar.id = 'navbar-' + tabId;
-    const isRevision = tabId === 'revision';
-    bar.innerHTML = `
-      ${!isRevision ? `<button class="btn btn-form-save" id="btnsave-tab-${tabId}" onclick="guardarTab('${tabId}')">💾 ${t('btn_guardar_form')}</button>` : ''}
-      <div class="tab-nav-btns">
-        ${prev ? `<button class="btn btn-outline2" onclick="goPrevTab()">← ${t('btn_prev_form')} (${TAB_LABELS[prev]})</button>` : ''}
-        ${next ? `<button class="btn btn-primary2" onclick="goNextTab()">${t('btn_next_form')} (${TAB_LABELS[next]}) →</button>` : ''}
-      </div>`;
+
+    // Botón guardar esta pestaña
+    if (!isRevision) {
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'btn btn-form-save';
+      saveBtn.id = 'btnsave-tab-' + tabId;
+      saveBtn.setAttribute('data-i18n', 'btn_guardar_form');
+      saveBtn.setAttribute('type', 'button');
+      saveBtn.onclick = () => guardarTab(tabId);
+      saveBtn.textContent = '💾 Guardar formulario';
+      bar.appendChild(saveBtn);
+    }
+
+    // Botones navegación
+    const navDiv = document.createElement('div');
+    navDiv.className = 'tab-nav-btns';
+
+    if (prevId) {
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'btn btn-outline2';
+      prevBtn.setAttribute('type', 'button');
+      prevBtn.setAttribute('data-nav', 'prev');
+      prevBtn.setAttribute('data-nav-tab', tabId);
+      prevBtn.onclick = goPrevTab;
+      navDiv.appendChild(prevBtn);
+    }
+    if (nextId) {
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'btn btn-primary2';
+      nextBtn.setAttribute('type', 'button');
+      nextBtn.setAttribute('data-nav', 'next');
+      nextBtn.setAttribute('data-nav-tab', tabId);
+      nextBtn.onclick = goNextTab;
+      navDiv.appendChild(nextBtn);
+    }
+    bar.appendChild(navDiv);
     tabEl.appendChild(bar);
   });
+  // Texto inicial de los botones de navegación
+  updateNavButtonTexts();
 }
 
 // --- Revisión final: renderiza TODOS los formularios completados ---
@@ -2322,9 +2367,19 @@ function renderRevision() {
   cont.innerHTML = html;
 }
 
-/* ============================================================
-   GUIDED TOUR ENGINE
-   ============================================================ */
+// --- Actualiza textos de botones de navegación según idioma activo ---
+function updateNavButtonTexts() {
+  TAB_ORDER.forEach((tabId, i) => {
+    const prevId = i > 0 ? TAB_ORDER[i - 1] : null;
+    const nextId = i < TAB_ORDER.length - 1 ? TAB_ORDER[i + 1] : null;
+    const prevBtn = document.querySelector(`[data-nav="prev"][data-nav-tab="${tabId}"]`);
+    const nextBtn = document.querySelector(`[data-nav="next"][data-nav-tab="${tabId}"]`);
+    if (prevBtn && prevId) prevBtn.textContent = `← ${t('btn_prev_form')}: ${TAB_LABELS[prevId]}`;
+    if (nextBtn && nextId) nextBtn.textContent = `${t('btn_next_form')}: ${TAB_LABELS[nextId]} →`;
+  });
+}
+
+
 const TOUR_STEPS = [
   { target: '#tab-portada .card',        tab: 'portada',  titleKey: 'tour_title_1', descKey: 'tour_desc_1' },
   { target: '#tab-portada .card',        tab: 'portada',  titleKey: 'tour_title_2', descKey: 'tour_desc_2' },
@@ -2426,11 +2481,10 @@ function cerrarTour() {
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  // Apply saved preferences
+  // 1. Preferencias guardadas (tema e idioma)
   applyTheme();
-  applyLang();
 
-  // Build dynamic tables
+  // 2. Construir tablas dinámicas primero (crean los DOM nodes)
   buildAlcanceTable();
   buildFactoresTable();
   buildRiesgosTable();
@@ -2440,32 +2494,35 @@ document.addEventListener('DOMContentLoaded', () => {
   buildHallazgosTable();
   buildPlanTable();
 
-  // Tab navigation
+  // 3. Inyectar botones guardar + navegación (DOM ya existe)
+  injectFormButtons();
+
+  // 4. Restaurar datos guardados
+  loadSavedData();
+
+  // 5. Aplicar idioma DESPUÉS de restaurar (traduce todo incluyendo botones)
+  applyLang();
+
+  // 6. Actualizar KPIs y progreso
+  updateGlobalProgress();
+  updateDomainKpis();
+  updateBreadcrumb('portada');
+
+  // 7. Navegación por pestañas
   document.getElementById('tabsNav').addEventListener('click', e => {
     const btn = e.target.closest('[data-tab]');
     if (btn) switchTab(btn.dataset.tab);
   });
 
-  // Inject save buttons + prev/next navigation in every form
-  injectFormButtons();
-
-  // Load saved data
-  loadSavedData();
-  updateGlobalProgress();
-  updateDomainKpis();
-
-  // Initial breadcrumb
-  updateBreadcrumb('portada');
-
-  // Global search — Enter key navigates to first result
+  // 8. Búsqueda global — Enter va al primer resultado
   document.getElementById('globalSearch').addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       const first = document.querySelector('.obj-card:not(.search-hidden)');
-      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     }
   });
 
-  // Listen for system theme change
+  // 9. Detectar cambio del sistema de tema
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
     if (!localStorage.getItem('cobit_theme')) {
       currentTheme = e.matches ? 'dark' : 'light';
